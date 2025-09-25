@@ -14,7 +14,7 @@ const Flip = ({ readOnly }: FlipProps) => {
 
   return (
     <Button variant="outline" size="icon" onClick={() => flip()} className="ml-2">
-      <RefreshCw className="h-6 w-6" />
+      <RefreshCw className="h-10 w-10" />
     </Button>
   );
 };

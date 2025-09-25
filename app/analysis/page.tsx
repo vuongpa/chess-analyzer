@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { NextChessboard } from '@/components/chessground';
-import { DefaultLayout } from '@/components/default-layout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Chess } from 'chess.js';
+import { NextChessboard } from "@/components/chessground";
+import { DefaultLayout } from "@/components/default-layout";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Chess } from "chess.js";
 import {
   BarChart2,
   ChevronLeft,
@@ -16,9 +16,9 @@ import {
   ChevronsRight,
   Pause,
   Play,
-  RefreshCcw
-} from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+  RefreshCcw,
+} from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface MoveHistory {
   san: string;
@@ -32,57 +32,59 @@ interface MoveHistory {
     san: string;
     lan: string;
   };
-  turn: 'w' | 'b';
+  turn: "w" | "b";
   moveNumber: number;
 }
 
 export default function AnalysisPage() {
   const [chessInstance] = useState<Chess>(new Chess());
-  const [fen, setFen] = useState('start');
-  const [pgn, setPgn] = useState('');
+  const [fen, setFen] = useState("start");
+  const [pgn, setPgn] = useState("");
   const [history, setHistory] = useState<MoveHistory[]>([]);
   const [currentMove, setCurrentMove] = useState(-1);
   const [isPlaying, setIsPlaying] = useState(false);
   const playIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [orientation, setOrientation] = useState<'white' | 'black'>('white');
-  
+  const [orientation, setOrientation] = useState<"white" | "black">("white");
+
   const loadPgn = (pgnContent: string) => {
     try {
       chessInstance.loadPgn(pgnContent);
       setPgn(pgnContent);
-      
+
       const moves = [];
       const tempChess = new Chess();
-      
+
       for (const move of chessInstance.history({ verbose: true })) {
         tempChess.move(move);
         const fen = tempChess.fen();
         const turn = tempChess.turn();
-        const moveNumber = Math.floor((tempChess.moveNumber() + (turn === 'b' ? 0 : 1)) / 2);
-        
+        const moveNumber = Math.floor(
+          (tempChess.moveNumber() + (turn === "b" ? 0 : 1)) / 2
+        );
+
         moves.push({
           san: move.san,
           fen,
           move,
           turn,
-          moveNumber
+          moveNumber,
         });
       }
-      
+
       setHistory(moves);
       setFen(tempChess.fen());
       setCurrentMove(moves.length - 1);
-      
-      setOrientation(tempChess.turn() === 'w' ? 'black' : 'white');
+
+      setOrientation(tempChess.turn() === "w" ? "black" : "white");
     } catch (error) {
-      console.error('Error loading PGN:', error);
+      console.error("Error loading PGN:", error);
     }
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       chessInstance.reset();
-      const storedPgn = localStorage.getItem('pgnContent');
+      const storedPgn = localStorage.getItem("pgnContent");
       if (storedPgn) {
         loadPgn(storedPgn);
       } else {
@@ -117,7 +119,7 @@ export default function AnalysisPage() {
         loadPgn(samplePgn);
       }
     }
-    
+
     return () => {
       if (playIntervalRef.current) {
         clearInterval(playIntervalRef.current);
@@ -129,7 +131,7 @@ export default function AnalysisPage() {
     if (currentMove >= 0 && currentMove < history.length) {
       setFen(history[currentMove].fen);
     } else if (currentMove === -1) {
-      setFen('start');
+      setFen("start");
     }
   }, [currentMove, history]);
 
@@ -147,7 +149,7 @@ export default function AnalysisPage() {
     } else if (playIntervalRef.current) {
       clearInterval(playIntervalRef.current);
     }
-    
+
     return () => {
       if (playIntervalRef.current) {
         clearInterval(playIntervalRef.current);
@@ -158,13 +160,19 @@ export default function AnalysisPage() {
   const goToStart = () => setCurrentMove(-1);
   const goToEnd = () => setCurrentMove(history.length - 1);
   const goToPrevMove = () => setCurrentMove((prev) => Math.max(-1, prev - 1));
-  const goToNextMove = () => setCurrentMove((prev) => Math.min(history.length - 1, prev + 1));
+  const goToNextMove = () =>
+    setCurrentMove((prev) => Math.min(history.length - 1, prev + 1));
   const togglePlay = () => setIsPlaying((prev) => !prev);
   const goToMove = (index: number) => setCurrentMove(index);
-  const flipBoard = () => setOrientation(prev => prev === 'white' ? 'black' : 'white');
+  const flipBoard = () =>
+    setOrientation((prev) => (prev === "white" ? "black" : "white"));
 
   const getMoveItemClass = (index: number) => {
-    return `px-2 py-1 rounded cursor-pointer ${currentMove === index ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'}`;
+    return `px-2 py-1 rounded cursor-pointer ${
+      currentMove === index
+        ? "bg-primary text-primary-foreground"
+        : "hover:bg-accent"
+    }`;
   };
 
   return (
@@ -178,65 +186,123 @@ export default function AnalysisPage() {
                 <div className="aspect-square w-full relative">
                   {/* Board coordinates */}
                   <div className="absolute top-0 bottom-0 left-0 z-10 flex flex-col justify-around pointer-events-none">
-                    {orientation === 'white' ? 
-                      ['8', '7', '6', '5', '4', '3', '2', '1'].map(num => (
-                        <div key={num} className="text-xs opacity-70 w-4 text-center">{num}</div>
-                      )) : 
-                      ['1', '2', '3', '4', '5', '6', '7', '8'].map(num => (
-                        <div key={num} className="text-xs opacity-70 w-4 text-center">{num}</div>
-                      ))
-                    }
+                    {orientation === "white"
+                      ? ["8", "7", "6", "5", "4", "3", "2", "1"].map((num) => (
+                          <div
+                            key={num}
+                            className="text-xs opacity-70 w-4 text-center"
+                          >
+                            {num}
+                          </div>
+                        ))
+                      : ["1", "2", "3", "4", "5", "6", "7", "8"].map((num) => (
+                          <div
+                            key={num}
+                            className="text-xs opacity-70 w-4 text-center"
+                          >
+                            {num}
+                          </div>
+                        ))}
                   </div>
-                  <div className="absolute left-0 right-0 bottom-0 z-10 flex justify-around pointer-events-none">
-                    {orientation === 'white' ? 
-                      ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map(letter => (
-                        <div key={letter} className="text-xs opacity-70 h-4 text-center">{letter}</div>
-                      )) : 
-                      ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'].map(letter => (
-                        <div key={letter} className="text-xs opacity-70 h-4 text-center">{letter}</div>
-                      ))
-                    }
-                  </div>
-                  
-                  <div className="h-full w-full">
-                    <NextChessboard 
+                  {orientation === "white" && (
+                    <div className="absolute left-0 right-0 bottom-0 z-10 flex justify-around pointer-events-none">
+                      {["a", "b", "c", "d", "e", "f", "g", "h"].map(
+                        (letter) => (
+                          <div
+                            key={letter}
+                            className="text-xs opacity-70 h-4 text-center"
+                          >
+                            {letter}
+                          </div>
+                        )
+                      )}
+                    </div>
+                  )}
+                  {orientation === "black" && (
+                    <div className="absolute left-0 right-0 top-0 z-10 flex justify-around pointer-events-none">
+                      {["h", "g", "f", "e", "d", "c", "b", "a"].map(
+                        (letter) => (
+                          <div
+                            key={letter}
+                            className="text-xs opacity-70 h-4 text-center"
+                          >
+                            {letter}
+                          </div>
+                        )
+                      )}
+                    </div>
+                  )}
+
+                  <div className="h-full w-full z-99">
+                    <NextChessboard
                       fen={fen}
                       orientation={orientation}
                       lastMove={
-                        currentMove >= 0 && currentMove < history.length ? 
-                        {
-                          from: history[currentMove].move.from,
-                          to: history[currentMove].move.to
-                        } : undefined
+                        currentMove >= 0 && currentMove < history.length
+                          ? {
+                              from: history[currentMove].move.from,
+                              to: history[currentMove].move.to,
+                            }
+                          : undefined
                       }
                       onFenChange={(newFen) => {
-                        console.log('FEN updated:', newFen);
+                        console.log("FEN updated:", newFen);
                       }}
                       readOnly={true}
                     />
                   </div>
                 </div>
-                
+
                 <div className="mt-4 flex justify-between items-center">
                   <div className="flex gap-2">
-                    <Button variant="outline" size="icon" onClick={goToStart} title="Go to start">
-                      <ChevronsLeft className="h-6 w-6" />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={goToStart}
+                      title="Go to start"
+                    >
+                      <ChevronsLeft />
                     </Button>
-                    <Button variant="outline" size="icon" onClick={goToPrevMove} title="Previous move">
-                      <ChevronLeft className="h-6 w-6" />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={goToPrevMove}
+                      title="Previous move"
+                    >
+                      <ChevronLeft />
                     </Button>
-                    <Button variant="outline" size="icon" onClick={togglePlay} title={isPlaying ? "Pause" : "Play"}>
-                      {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={togglePlay}
+                      title={isPlaying ? "Pause" : "Play"}
+                    >
+                      {isPlaying ? <Pause /> : <Play />}
                     </Button>
-                    <Button variant="outline" size="icon" onClick={goToNextMove} title="Next move">
-                      <ChevronRight className="h-6 w-6" />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={goToNextMove}
+                      title="Next move"
+                    >
+                      <ChevronRight />
                     </Button>
-                    <Button variant="outline" size="icon" onClick={goToEnd} title="Go to end">
-                      <ChevronsRight className="h-6 w-6" />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={goToEnd}
+                      title="Go to end"
+                    >
+                      <ChevronsRight />
                     </Button>
                   </div>
-                  <Button variant="outline" size='icon' onClick={flipBoard} title="Flip board">
-                    <RefreshCcw className="h-10 w-10" />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={flipBoard}
+                    title="Flip board"
+                  >
+                    <RefreshCcw />
                   </Button>
                 </div>
               </CardContent>
@@ -258,27 +324,49 @@ export default function AnalysisPage() {
                         <div className="font-medium">#</div>
                         <div className="font-medium">White</div>
                         <div className="font-medium">Black</div>
-                        
+
                         <Separator className="col-span-3 my-2" />
-                        {Array.from({ length: Math.ceil(history.length / 2) }).map((_, i) => {
+                        {Array.from({
+                          length: Math.ceil(history.length / 2),
+                        }).map((_, i) => {
                           const moveNum = i + 1;
                           const whiteIdx = i * 2;
                           const blackIdx = i * 2 + 1;
-                          
+
                           return (
                             <React.Fragment key={moveNum}>
-                              <div className="text-muted-foreground">{moveNum}.</div>
-                              <div 
-                                className={whiteIdx < history.length ? getMoveItemClass(whiteIdx) : ''}
-                                onClick={() => whiteIdx < history.length && goToMove(whiteIdx)}
-                              >
-                                {whiteIdx < history.length ? history[whiteIdx].san : ''}
+                              <div className="text-muted-foreground">
+                                {moveNum}.
                               </div>
-                              <div 
-                                className={blackIdx < history.length ? getMoveItemClass(blackIdx) : ''}
-                                onClick={() => blackIdx < history.length && goToMove(blackIdx)}
+                              <div
+                                className={
+                                  whiteIdx < history.length
+                                    ? getMoveItemClass(whiteIdx)
+                                    : ""
+                                }
+                                onClick={() =>
+                                  whiteIdx < history.length &&
+                                  goToMove(whiteIdx)
+                                }
                               >
-                                {blackIdx < history.length ? history[blackIdx].san : ''}
+                                {whiteIdx < history.length
+                                  ? history[whiteIdx].san
+                                  : ""}
+                              </div>
+                              <div
+                                className={
+                                  blackIdx < history.length
+                                    ? getMoveItemClass(blackIdx)
+                                    : ""
+                                }
+                                onClick={() =>
+                                  blackIdx < history.length &&
+                                  goToMove(blackIdx)
+                                }
+                              >
+                                {blackIdx < history.length
+                                  ? history[blackIdx].san
+                                  : ""}
                               </div>
                             </React.Fragment>
                           );
@@ -292,8 +380,13 @@ export default function AnalysisPage() {
                     <div className="p-4 flex flex-col items-center justify-center h-full">
                       <div className="text-center text-muted-foreground">
                         <BarChart2 className="h-12 w-12 mx-auto mb-4" />
-                        <p>Evaluation feature will be implemented in the next phase</p>
-                        <p className="text-sm mt-2">This will show engine analysis of the current position</p>
+                        <p>
+                          Evaluation feature will be implemented in the next
+                          phase
+                        </p>
+                        <p className="text-sm mt-2">
+                          This will show engine analysis of the current position
+                        </p>
                       </div>
                     </div>
                   </ScrollArea>
@@ -301,30 +394,44 @@ export default function AnalysisPage() {
                 <TabsContent value="info" className="flex-1">
                   <ScrollArea className="h-[70vh]">
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold mb-2">Game Information</h3>
+                      <h3 className="text-lg font-semibold mb-2">
+                        Game Information
+                      </h3>
                       <div className="space-y-2">
                         {/* Display file name if available */}
-                        {typeof window !== 'undefined' && localStorage.getItem('pgnFileName') && (
-                          <div className="grid grid-cols-[120px_1fr]">
-                            <div className="text-muted-foreground">File:</div>
-                            <div>{localStorage.getItem('pgnFileName')}</div>
-                          </div>
-                        )}
+                        {typeof window !== "undefined" &&
+                          localStorage.getItem("pgnFileName") && (
+                            <div className="grid grid-cols-[120px_1fr]">
+                              <div className="text-muted-foreground">File:</div>
+                              <div>{localStorage.getItem("pgnFileName")}</div>
+                            </div>
+                          )}
                         <Separator className="my-2" />
-                        {pgn.split('\n').slice(0, 10).map((line, i) => {
-                          if (line.startsWith('[') && line.includes('"')) {
-                            const key = line.substring(1, line.indexOf(' '));
-                            const value = line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
-                            
-                            return (
-                              <div key={i} className="grid grid-cols-[120px_1fr]">
-                                <div className="text-muted-foreground">{key}:</div>
-                                <div>{value}</div>
-                              </div>
-                            );
-                          }
-                          return null;
-                        })}
+                        {pgn
+                          .split("\n")
+                          .slice(0, 10)
+                          .map((line, i) => {
+                            if (line.startsWith("[") && line.includes('"')) {
+                              const key = line.substring(1, line.indexOf(" "));
+                              const value = line.substring(
+                                line.indexOf('"') + 1,
+                                line.lastIndexOf('"')
+                              );
+
+                              return (
+                                <div
+                                  key={i}
+                                  className="grid grid-cols-[120px_1fr]"
+                                >
+                                  <div className="text-muted-foreground">
+                                    {key}:
+                                  </div>
+                                  <div>{value}</div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          })}
                       </div>
                     </div>
                   </ScrollArea>

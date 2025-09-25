@@ -9,10 +9,7 @@ interface AdvancedProps {
 const Advanced = ({ readOnly }: AdvancedProps) => {
   return (
     <div className="advanced-tools mt-2 flex items-center justify-between">
-      <div></div>
-      <div>
-        <Flip readOnly={readOnly} />
-      </div>
+      <Flip readOnly={readOnly} />
     </div>
   );
 };

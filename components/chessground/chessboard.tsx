@@ -123,7 +123,11 @@ const Chessboard = forwardRef<ChessboardRef, ChessboardComponentProps>((props, r
             turnColor={turnColor}
             lastMove={lastMove}
             orientation={orientation}
-            movable={{ dests: toDests(chess) }}
+            movable={{ 
+              dests: toDests(chess),
+              showDests: true,
+              color: turnColor
+            }}
             {...cgProps(props)}
           />
           <Promote

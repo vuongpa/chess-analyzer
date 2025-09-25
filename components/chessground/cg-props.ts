@@ -21,6 +21,12 @@ const cgProps = (props: ChessProps): Partial<Config> => {
     config.premovable = {
       enabled: false,
     };
+  } else {
+    // Enable showing possible destinations for pieces
+    config.movable = {
+      ...config.movable,
+      showDests: true,
+    };
   }
 
   if (props.viewOnly === true) {
