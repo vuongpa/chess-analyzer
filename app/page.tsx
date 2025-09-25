@@ -4,24 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { uploadPgn } from "./actions";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DefaultLayout } from "@/components/default-layout";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const formSchema = z.object({
-  file: z.instanceof(FileList).refine(files => files.length > 0, {
-    message: "Please select a file"
-  }).refine(files => {
-    const file = files[0];
-    return file.name.endsWith('.pgn');
-  }, {
-    message: "File must be a PGN file"
-  })
-});
-
-type FormValues = z.infer<typeof formSchema>;
+interface FormValues {
+  file: FileList;
+}
 
 export default function Home() {
   const [isUploading, setIsUploading] = useState(false);
@@ -29,6 +20,26 @@ export default function Home() {
     success?: boolean;
     message?: string;
   } | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const createFormSchema = () => {
+    return z.object({
+      file: z.instanceof(FileList)
+        .refine(files => files.length > 0, {
+          message: "Please select a file"
+        })
+        .refine(files => {
+          const file = files[0];
+          return file?.name?.endsWith('.pgn');
+        }, {
+          message: "File must be a PGN file"
+        })
+    });
+  };
 
   const { 
     register, 
@@ -36,17 +47,18 @@ export default function Home() {
     formState: { errors, isValid },
     reset 
   } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: isMounted ? zodResolver(createFormSchema()) : undefined,
     mode: "onChange"
   });
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    if (!isMounted) return; 
+    
     setIsUploading(true);
     
     try {
       const formData = new FormData();
-      const fileList = data.file as unknown as FileList;
-      formData.append("file", fileList[0]);
+      formData.append("file", data.file[0]); 
       
       const result = await uploadPgn(formData);
       setUploadStatus(result);
@@ -83,18 +95,30 @@ export default function Home() {
                   <label htmlFor="pgn-upload" className="text-sm font-medium">
                     PGN File
                   </label>
-                  <Input
-                    id="pgn-upload"
-                    type="file"
-                    accept=".pgn"
-                    className={`cursor-pointer ${errors.file ? 'border-red-500' : ''}`}
-                    {...register('file')}
-                  />
-                  
-                  {errors.file && (
-                    <p className="text-xs text-red-500">
-                      {errors.file.message}
-                    </p>
+                  {isMounted ? (
+                    <>
+                      <Input
+                        id="pgn-upload"
+                        type="file"
+                        accept=".pgn"
+                        className={`cursor-pointer ${errors.file ? 'border-red-500' : ''}`}
+                        {...register('file')}
+                      />
+                      
+                      {errors.file && (
+                        <p className="text-xs text-red-500">
+                          {errors.file.message?.toString() || "Invalid file"}
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <Input
+                      id="pgn-upload-placeholder"
+                      type="file"
+                      accept=".pgn"
+                      disabled
+                      className="cursor-pointer"
+                    />
                   )}
                   
                   <p className="text-xs text-muted-foreground">
@@ -113,7 +137,7 @@ export default function Home() {
                 <div className="flex justify-center">
                   <Button 
                     type="submit" 
-                    disabled={!isValid || isUploading}
+                    disabled={!isMounted || !isValid || isUploading}
                     className="w-full sm:w-auto px-8"
                     size="lg"
                   >
