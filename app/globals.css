@@ -3,151 +3,113 @@
 
 @custom-variant dark (&:is(.dark *));
 
-:root {
-  --background: oklch(0.8798 0.0534 91.7893);
-  --foreground: oklch(0.4265 0.0310 59.2153);
-  --card: oklch(0.8937 0.0395 87.5676);
-  --card-foreground: oklch(0.4265 0.0310 59.2153);
-  --popover: oklch(0.9378 0.0331 89.8515);
-  --popover-foreground: oklch(0.4265 0.0310 59.2153);
-  --primary: oklch(0.6657 0.1050 118.9078);
-  --primary-foreground: oklch(0.9882 0.0069 88.6415);
-  --secondary: oklch(0.8532 0.0631 91.1493);
-  --secondary-foreground: oklch(0.4265 0.0310 59.2153);
-  --muted: oklch(0.8532 0.0631 91.1493);
-  --muted-foreground: oklch(0.5761 0.0259 60.9323);
-  --accent: oklch(0.8361 0.0713 90.3269);
-  --accent-foreground: oklch(0.4265 0.0310 59.2153);
-  --destructive: oklch(0.7136 0.0981 29.9827);
-  --destructive-foreground: oklch(0.9790 0.0082 91.4818);
-  --border: oklch(0.6918 0.0440 59.8448);
-  --input: oklch(0.8361 0.0713 90.3269);
-  --ring: oklch(0.7350 0.0564 130.8494);
-  --chart-1: oklch(0.7350 0.0564 130.8494);
-  --chart-2: oklch(0.6762 0.0567 132.4479);
-  --chart-3: oklch(0.8185 0.0332 136.6539);
-  --chart-4: oklch(0.5929 0.0464 137.6224);
-  --chart-5: oklch(0.5183 0.0390 137.1892);
-  --sidebar: oklch(0.8631 0.0645 90.5161);
-  --sidebar-foreground: oklch(0.4265 0.0310 59.2153);
-  --sidebar-primary: oklch(0.7350 0.0564 130.8494);
-  --sidebar-primary-foreground: oklch(0.9882 0.0069 88.6415);
-  --sidebar-accent: oklch(0.9225 0.0169 88.0027);
-  --sidebar-accent-foreground: oklch(0.4265 0.0310 59.2153);
-  --sidebar-border: oklch(0.9073 0.0170 88.0044);
-  --sidebar-ring: oklch(0.7350 0.0564 130.8494);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --radius: 0.425rem;
-  --shadow-2xs: 3px 3px 2px 0px hsl(88 22% 35% / 0.07);
-  --shadow-xs: 3px 3px 2px 0px hsl(88 22% 35% / 0.07);
-  --shadow-sm: 3px 3px 2px 0px hsl(88 22% 35% / 0.15), 3px 1px 2px -1px hsl(88 22% 35% / 0.15);
-  --shadow: 3px 3px 2px 0px hsl(88 22% 35% / 0.15), 3px 1px 2px -1px hsl(88 22% 35% / 0.15);
-  --shadow-md: 3px 3px 2px 0px hsl(88 22% 35% / 0.15), 3px 2px 4px -1px hsl(88 22% 35% / 0.15);
-  --shadow-lg: 3px 3px 2px 0px hsl(88 22% 35% / 0.15), 3px 4px 6px -1px hsl(88 22% 35% / 0.15);
-  --shadow-xl: 3px 3px 2px 0px hsl(88 22% 35% / 0.15), 3px 8px 10px -1px hsl(88 22% 35% / 0.15);
-  --shadow-2xl: 3px 3px 2px 0px hsl(88 22% 35% / 0.38);
-  --tracking-normal: 0em;
-  --spacing: 0.25rem;
-}
-
-.dark {
-  --background: oklch(0.3303 0.0214 88.0737);
-  --foreground: oklch(0.9217 0.0235 82.1191);
-  --card: oklch(0.3583 0.0165 82.3257);
-  --card-foreground: oklch(0.9217 0.0235 82.1191);
-  --popover: oklch(0.3583 0.0165 82.3257);
-  --popover-foreground: oklch(0.9217 0.0235 82.1191);
-  --primary: oklch(0.6762 0.0567 132.4479);
-  --primary-foreground: oklch(0.2686 0.0105 61.0213);
-  --secondary: oklch(0.4448 0.0239 84.5498);
-  --secondary-foreground: oklch(0.9217 0.0235 82.1191);
-  --muted: oklch(0.3892 0.0197 82.7084);
-  --muted-foreground: oklch(0.7096 0.0171 73.6179);
-  --accent: oklch(0.6540 0.0723 90.7629);
-  --accent-foreground: oklch(0.2686 0.0105 61.0213);
-  --destructive: oklch(0.6287 0.0821 31.2958);
-  --destructive-foreground: oklch(0.9357 0.0201 84.5907);
-  --border: oklch(0.4448 0.0239 84.5498);
-  --input: oklch(0.4448 0.0239 84.5498);
-  --ring: oklch(0.6762 0.0567 132.4479);
-  --chart-1: oklch(0.6762 0.0567 132.4479);
-  --chart-2: oklch(0.7350 0.0564 130.8494);
-  --chart-3: oklch(0.5929 0.0464 137.6224);
-  --chart-4: oklch(0.6540 0.0723 90.7629);
-  --chart-5: oklch(0.5183 0.0390 137.1892);
-  --sidebar: oklch(0.3303 0.0214 88.0737);
-  --sidebar-foreground: oklch(0.9217 0.0235 82.1191);
-  --sidebar-primary: oklch(0.6762 0.0567 132.4479);
-  --sidebar-primary-foreground: oklch(0.2686 0.0105 61.0213);
-  --sidebar-accent: oklch(0.6540 0.0723 90.7629);
-  --sidebar-accent-foreground: oklch(0.2686 0.0105 61.0213);
-  --sidebar-border: oklch(0.4448 0.0239 84.5498);
-  --sidebar-ring: oklch(0.6762 0.0567 132.4479);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --radius: 0.425rem;
-  --shadow-2xs: 3px 3px 2px 0px hsl(88 22% 35% / 0.07);
-  --shadow-xs: 3px 3px 2px 0px hsl(88 22% 35% / 0.07);
-  --shadow-sm: 3px 3px 2px 0px hsl(88 22% 35% / 0.15), 3px 1px 2px -1px hsl(88 22% 35% / 0.15);
-  --shadow: 3px 3px 2px 0px hsl(88 22% 35% / 0.15), 3px 1px 2px -1px hsl(88 22% 35% / 0.15);
-  --shadow-md: 3px 3px 2px 0px hsl(88 22% 35% / 0.15), 3px 2px 4px -1px hsl(88 22% 35% / 0.15);
-  --shadow-lg: 3px 3px 2px 0px hsl(88 22% 35% / 0.15), 3px 4px 6px -1px hsl(88 22% 35% / 0.15);
-  --shadow-xl: 3px 3px 2px 0px hsl(88 22% 35% / 0.15), 3px 8px 10px -1px hsl(88 22% 35% / 0.15);
-  --shadow-2xl: 3px 3px 2px 0px hsl(88 22% 35% / 0.38);
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
-
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
-  --font-serif: var(--font-serif);
-
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+}
 
-  --shadow-2xs: var(--shadow-2xs);
-  --shadow-xs: var(--shadow-xs);
-  --shadow-sm: var(--shadow-sm);
-  --shadow: var(--shadow);
-  --shadow-md: var(--shadow-md);
-  --shadow-lg: var(--shadow-lg);
-  --shadow-xl: var(--shadow-xl);
-  --shadow-2xl: var(--shadow-2xl);
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
 }
 
 @layer base {
@@ -158,4 +120,666 @@
     @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
   }
+}
+
+/* Basic chess board styling */
+.cg-wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: block;
+}
+
+.cg-board {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  line-height: 0;
+  background-size: cover;
+  cursor: pointer;
+}
+
+/* Chess squares */
+.cg-board square {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12.5%;
+  height: 12.5%;
+  pointer-events: none;
+}
+
+/* Light and dark squares */
+.cg-board square.light {
+  background-color: #f0d9b5;
+  color: #b58863;
+}
+
+.cg-board square.dark {
+  background-color: #b58863;
+  color: #f0d9b5;
+}
+
+/* Chess pieces */
+.cg-board piece {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12.5%;
+  height: 12.5%;
+  background-size: cover;
+  z-index: 2;
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* Piece images */
+.cg-board piece.pawn.white {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NSIgaGVpZ2h0PSI0NSI+PHBhdGggZD0iTTIyLjUgOWMtMi4yMSAwLTQgMS43OS00IDQgMCAuODkuMjkgMS43MS43OCAyLjM4QzE3LjMzIDE2LjUgMTYgMTguNTkgMTYgMjFjMCAyLjAzLjk0IDMuODQgMi40MSA1LjAzLTMgMS4wNi03LjQxIDUuNTUtNy40MSAxMy40N2gyM2MwLTcuOTItNC40MS0xMi40MS03LjQxLTEzLjQ3IDEuNDctMS4xOSAyLjQxLTMgMi40MS01LjAzIDAtMi40MS0xLjMzLTQuNS0zLjI4LTUuNjIuNDktLjY3Ljc4LTEuNDkuNzgtMi4zOCAwLTIuMjEtMS43OS00LTQtNHoiIGZpbGw9IiNmZmYiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==');
+}
+
+.cg-board piece.bishop.white {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NSIgaGVpZ2h0PSI0NSI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxnIGZpbGw9IiNmZmYiIHN0cm9rZS1saW5lY2FwPSJidXR0Ij48cGF0aCBkPSJNOSAzNmMzLjM5LS45NyAxMC4xMS40MyAxMy41LTIgMy4zOSAyLjQzIDEwLjExIDEuMDMgMTMuNSAyIDAgMCAxLjY1LjU0IDMgMi0uNjguOTctMS42NS45OS0zIC41LTMuMzktLjk3LTEwLjExLjQ2LTEzLjUtMS0zLjM5IDEuNDYtMTAuMTEuMDMtMTMuNSAxLTEuMzU0LjQ5LTIuMzIzLjQ3LTMtLjUgMS4zNTQtMS45NCAzLTIgMy0yeiIvPjxwYXRoIGQ9Ik0xNSAzMmMyLjUgMi41IDEyLjUgMi41IDE1IDAgLjUtMS41IDAtMiAwLTIgMC0yLjUtMi41LTQtMi41LTQgNS41LTEuNSA2LTExLjUtNS0xNS41LTExIDQtMTAuNSAxNC01IDE1LjUgMCAwLTIuNSAxLjUtMi41IDQgMCAwLS41LjUgMCAyeiIvPjxwYXRoIGQ9Ik0yNSA4YTIuNSAyLjUgMCAxIDEtNSAwIDIuNSAyLjUgMCAxIDEgNSAweiIvPjwvZz48cGF0aCBkPSJNMTcuNSAyNmgxME0xNSAzMGgxNW0tNy41LTE0LjV2NU0yMCAxOGg1IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+PC9nPjwvc3ZnPg==');
+}
+
+.cg-board piece.knight.white {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NSIgaGVpZ2h0PSI0NSI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMiAxMGMxMC41IDEgMTYuNSA4IDE2IDI5SDE1YzAtOSAxMC02LjUgOC0yMSIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0yNCAxOGMuMzggMi45MS01LjU1IDcuMzctOCA5LTMgMi0yLjgyIDQuMzQtNSA0LTEuMDQyLS45NCAxLjQxLTMuMDQgMC0zLTEgMCAuMTkgMS4yMy0xIDItMSAwLTQuMDAzIDEtNC00IDAtMiA2LTEyIDYtMTJzMS44OS0xLjkgMi0zLjVjLS43My0uOTk0LS41LTItLjUtMyAxLTEgMyAyLjUgMyAyLjVoMnMuNzgtMS45OTIgMi41LTNjMSAwIDEgMyAxIDMiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNOS41IDI1LjVhLjUuNSAwIDEgMS0xIDAgLjUuNSAwIDEgMSAxIDB6bTUuNDMzLTkuNzVhLjUgMS41IDMwIDEgMS0uODY2LS41LjUgMS41IDMwIDEgMSAuODY2LjV6IiBmaWxsPSIjMDAwIi8+PC9nPjwvc3ZnPg==');
+}
+
+.cg-board piece.rook.white {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NSIgaGVpZ2h0PSI0NSI+PGcgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik05IDM5aDI3di0zSDl2M3ptMy0zdi00aDIxdjRIMTJ6bS0xLTIyVjloNHYyaDVWOWg1djJoNVY5aDR2NSIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiLz48cGF0aCBkPSJNMzQgMTRsLTMgM0gxNGwtMy0zIi8+PHBhdGggZD0iTTMxIDE3djEyLjVIMTRWMTciIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+PHBhdGggZD0iTTMxIDI5LjVsMS41IDIuNWgtMjBsMS41LTIuNSIvPjxwYXRoIGQ9Ik0xMSAxNGgyMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIvPjwvZz48L3N2Zz4=');
+}
+
+.cg-board piece.queen.white {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NSIgaGVpZ2h0PSI0NSI+PGcgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik04IDEyYTIgMiAwIDEgMS00IDAgMiAyIDAgMSAxIDQgMHptMTYuNS00LjVhMiAyIDAgMSAxLTQgMCAyIDIgMCAxIDEgNCAwek00MSAxMmEyIDIgMCAxIDEtNCAwIDIgMiAwIDEgMSA0IDB6TTE2IDguNWEyIDIgMCAxIDEtNCAwIDIgMiAwIDEgMSA0IDB6TTMzIDlhMiAyIDAgMSAxLTQgMCAyIDIgMCAxIDEgNCAweiIvPjxwYXRoIGQ9Ik05IDI2YzguNS0xLjUgMjEtMS41IDI3IDBsMi0xMi03IDExVjExbC01LjUgMTMuNS0zLTE1LTMgMTUtNS41LTE0VjI1TDcgMTRsMiAxMnoiIHN0cm9rZS1saW5lY2FwPSJidXR0Ii8+PHBhdGggZD0iTTkgMjZjMCAyIDEuNSAyIDIuNSA0IDEgMS41IDEgMSAuNSAzLjUtMS41IDEtMS41IDIuNS0xLjUgMi41LTEuNSAxLjUuNSAyLjUuNSAyLjUgNi41IDEgMTYuNSAxIDIzIDAgMCAwIDEuNS0xIDAtMi41IDAgMCAuNS0xLjUtMS0yLjUtLjUtMi41LS41LTIgLjUtMy41IDEtMiAyLjUtMiAyLjUtNC04LjUtMS41LTE4LjUtMS41LTI3IDB6IiBzdHJva2UtbGluZWNhcD0iYnV0dCIvPjxwYXRoIGQ9Ik0xMS41IDMwYzMuNS0xIDE4LjUtMSAyMiAwTTEyIDMzLjVjNi0xIDE1LTEgMjEgMCIgZmlsbD0ibm9uZSIvPjwvZz48L3N2Zz4=');
+}
+
+.cg-x piece.king.white {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NSIgaGVpZ2h0PSI0NSI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMi41IDExLjYzVjZNMjAgOGg1IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+PHBhdGggZD0iTTIyLjUgMjVzNC41LTcuNSAzLTEwLjVjMCAwLTEtMi41LTMtMi41cy0zIDIuNS0zIDIuNWMtMS41IDMgMyAxMC41IDMgMTAuNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiLz48cGF0aCBkPSJNMTEuNSAzN2M1LjUgMy41IDE1LjUgMy41IDIxIDB2LTdzOS00LjUgNi0xMC41Yy00LTYuNS0xMy41LTMuNS0xNiA0VjI3di0zLjVjLTMuNS03LjUtMTMtMTAuNS0xNi00LTMgNiA1IDEwIDUgMTBWMzd6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0iTTExLjUgMzBjNS41LTMgMTUuNS0zIDIxIDBtLTIxIDMuNWM1LjUtMyAxNS41LTMgMjEgMG0tMjEgMy41YzUuNS0zIDE1LjUtMyAyMSAwIi8+PC9nPjwvc3ZnPg==');
+}
+
+.cg-board piece.pawn.black {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NSIgaGVpZ2h0PSI0NSI+PHBhdGggZD0iTTIyLjUgOWMtMi4yMSAwLTQgMS43OS00IDQgMCAuODkuMjkgMS43MS43OCAyLjM4QzE3LjMzIDE2LjUgMTYgMTguNTkgMTYgMjFjMCAyLjAzLjk0IDMuODQgMi40MSA1LjAzLTMgMS4wNi03LjQxIDUuNTUtNy40MSAxMy40N2gyM2MwLTcuOTItNC40MS0xMi40MS03LjQxLTEzLjQ3IDEuNDctMS4xOSAyLjQxLTMgMi40MS01LjAzIDAtMi40MS0xLjMzLTQuNS0zLjI4LTUuNjIuNDktLjY3Ljc4LTEuNDkuNzgtMi4zOCAwLTIuMjEtMS43OS00LTQtNHoiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==');
+}
+
+.cg-board piece.bishop.black {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NSIgaGVpZ2h0PSI0NSI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxnIGZpbGw9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJidXR0Ij48cGF0aCBkPSJNOSAzNmMzLjM5LS45NyAxMC4xMS40MyAxMy41LTIgMy4zOSAyLjQzIDEwLjExIDEuMDMgMTMuNSAyIDAgMCAxLjY1LjU0IDMgMi0uNjguOTctMS42NS45OS0zIC41LTMuMzktLjk3LTEwLjExLjQ2LTEzLjUtMS0zLjM5IDEuNDYtMTAuMTEuMDMtMTMuNSAxLTEuMzU0LjQ5LTIuMzIzLjQ3LTMtLjUgMS4zNTQtMS45NCAzLTIgMy0yeiIvPjxwYXRoIGQ9Ik0xNSAzMmMyLjUgMi41IDEyLjUgMi41IDE1IDAgLjUtMS41IDAtMiAwLTIgMC0yLjUtMi41LTQtMi41LTQgNS41LTEuNSA2LTExLjUtNS0xNS41LTExIDQtMTAuNSAxNC01IDE1LjUgMCAwLTIuNSAxLjUtMi41IDQgMCAwLS41LjUgMCAyeiIvPjxwYXRoIGQ9Ik0yNSA4YTIuNSAyLjUgMCAxIDEtNSAwIDIuNSAyLjUgMCAxIDEgNSAweiIvPjwvZz48cGF0aCBkPSJNMTcuNSAyNmgxME0xNSAzMGgxNW0tNy41LTE0LjV2NU0yMCAxOGg1IiBzdHJva2U9IiNlY2VjZWMiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiLz48L2c+PC9zdmc+');
+}
+
+.cg-board piece.knight.black {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NSIgaGVpZ2h0PSI0NSI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMiAxMGMxMC41IDEgMTYuNSA4IDE2IDI5SDE1YzAtOSAxMC02LjUgOC0yMSIgZmlsbD0iIzAwMCIvPjxwYXRoIGQ9Ik0yNCAxOGMuMzggMi45MS01LjU1IDcuMzctOCA5LTMgMi0yLjgyIDQuMzQtNSA0LTEuMDQyLS45NCAxLjQxLTMuMDQgMC0zLTEgMCAuMTkgMS4yMy0xIDItMSAwLTQuMDAzIDEtNC00IDAtMiA2LTEyIDYtMTJzMS44OS0xLjkgMi0zLjVjLS43My0uOTk0LS41LTItLjUtMyAxLTEgMyAyLjUgMyAyLjVoMnMuNzgtMS45OTIgMi41LTNjMSAwIDEgMyAxIDMiIGZpbGw9IiMwMDAiLz48cGF0aCBkPSJNOS41IDI1LjVhLjUuNSAwIDEgMS0xIDAgLjUuNSAwIDEgMSAxIDB6bTUuNDMzLTkuNzVhLjUgMS41IDMwIDEgMS0uODY2LS41LjUgMS41IDMwIDEgMSAuODY2LjV6IiBmaWxsPSIjZWNlY2VjIiBzdHJva2U9IiNlY2VjZWMiLz48cGF0aCBkPSJNMjQuNTUgMTAuNGwtLjQ1IDEuNDUuNS4xNWMzLjE1IDEgNS42NSAyLjQ5IDcuOSA2Ljc1UzM1Ljc1IDI5LjA2IDM1LjI1IDM5bC0uMDUuNWgyLjI1bC4wNS0uNWMuNS0xMC4wNi0uODgtMTYuODUtMy4yNS0yMS4zNC0yLjM3LTQuNDktNS43OS02LjY0LTkuMTktNy4xNmwtLjUxLS4xeiIgZmlsbD0iI2VjZWNlYyIgc3Ryb2tlPSJub25lIi8+PC9nPjwvc3ZnPg==');
+}
+
+.cg-board piece.rook.black {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NSIgaGVpZ2h0PSI0NSI+PGcgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik05IDM5aDI3di0zSDl2M3ptMy41LTdsMS41LTIuNWgxN2wxLjUgMi41aC0yMHptLS41IDR2LTRoMjF2NEgxMnoiIHN0cm9rZS1saW5lY2FwPSJidXR0Ii8+PHBhdGggZD0iTTE0IDI5LjV2LTEzaDE3djEzSDE0eiIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiLz48cGF0aCBkPSJNMTQgMTYuNUwxMSAxNGgyM2wtMyAyLjVIMTR6TTExIDE0VjloNHYyaDVWOWg1djJoNVY5aDR2NUgxMXoiIHN0cm9rZS1saW5lY2FwPSJidXR0Ii8+PHBhdGggZD0iTTEyIDM1LjVoMjFtLTIwLTRoMTltLTE4LTJoMTdtLTE3LTEzaDE3TTExIDE0aDIzIiBmaWxsPSJub25lIiBzdHJva2U9IiNlY2VjZWMiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIvPjwvZz48L3N2Zz4=');
+}
+
+.cg-board piece.queen.black {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NSIgaGVpZ2h0PSI0NSI+PGcgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxnIHN0cm9rZT0ibm9uZSI+PGNpcmNsZSBjeD0iNiIgY3k9IjEyIiByPSIyLjc1Ii8+PGNpcmNsZSBjeD0iMTQiIGN5PSI5IiByPSIyLjc1Ii8+PGNpcmNsZSBjeD0iMjIuNSIgY3k9IjgiIHI9IjIuNzUiLz48Y2lyY2xlIGN4PSIzMSIgY3k9IjkiIHI9IjIuNzUiLz48Y2lyY2xlIGN4PSIzOSIgY3k9IjEyIiByPSIyLjc1Ii8+PC9nPjxwYXRoIGQ9Ik05IDI2YzguNS0xLjUgMjEtMS41IDI3IDBsMi41LTEyLjVMMzEgMjVsLS4zLTE0LjEtNS4yIDEzLjYtMy0xNC41LTMgMTQuNS01LjItMTMuNkwxNCAyNSA2LjUgMTMuNSA5IDI2eiIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiLz48cGF0aCBkPSJNOSAyNmMwIDIgMS41IDIgMi41IDQgMSAxLjUgMSAxIC41IDMuNS0xLjUgMS0xLjUgMi41LTEuNSAyLjUtMS41IDEuNS41IDIuNS41IDIuNSA2LjUgMSAxNi41IDEgMjMgMCAwIDAgMS41LTEgMC0yLjUgMCAwIC41LTEuNS0xLTIuNS0uNS0yLjUtLjUtMiAuNS0zLjUgMS0yIDIuNS0yIDIuNS00LTguNS0xLjUtMTguNS0xLjUtMjcgMHoiIHN0cm9rZS1saW5lY2FwPSJidXR0Ii8+PHBhdGggZD0iTTExIDM4LjVhMzUgMzUgMSAwIDAgMjMgMCIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiLz48cGF0aCBkPSJNMTEgMjlhMzUgMzUgMSAwIDEgMjMgMG0tMjEuNSAyLjVoMjBtLTIxIDNhMzUgMzUgMSAwIDAgMjIgMG0tMjMgM2EzNSAzNSAxIDAgMCAyNCAwIiBmaWxsPSJub25lIiBzdHJva2U9IiNlY2VjZWMiLz48L2c+PC9zdmc+');
+}
+
+.cg-board piece.king.black {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NSIgaGVpZ2h0PSI0NSI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMi41IDExLjYzVjZNMjAgOGg1IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIi8+PHBhdGggZD0iTTIyLjUgMjVzNC41LTcuNSAzLTEwLjVjMCAwLTEtMi41LTMtMi41cy0zIDIuNS0zIDIuNWMtMS41IDMgMyAxMC41IDMgMTAuNSIgZmlsbD0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiLz48cGF0aCBkPSJNMTEuNSAzN2M1LjUgMy41IDE1LjUgMy41IDIxIDB2LTdzOS00LjUgNi0xMC41Yy00LTYuNS0xMy41LTMuNS0xNiA0VjI3di0zLjVjLTMuNS03LjUtMTMtMTAuNS0xNi00LTMgNiA1IDEwIDUgMTBWMzd6IiBmaWxsPSIjMDAwIi8+PHBhdGggZD0iTTExLjUgMzBjNS41LTMgMTUuNS0zIDIxIDBtLTIxIDMuNWM1LjUtMyAxNS41LTMgMjEgMG0tMjEgMy41YzUuNS0zIDE1LjUtMyAyMSAwIiBzdHJva2U9IiNlY2VjZWMiLz48L2c+PC9zdmc+');
+}
+
+/* Highlights */
+.cg-board square.last-move {
+  background-color: rgba(155, 199, 0, 0.41);
+}
+
+.cg-board square.selected {
+  background-color: rgba(20, 85, 30, 0.5);
+}
+
+.cg-board square.check {
+  background: radial-gradient(ellipse at center, rgba(255, 0, 0, 1) 0%, rgba(231, 0, 0, 1) 25%, rgba(169, 0, 0, 0) 89%, rgba(158, 0, 0, 0) 100%);
+}
+
+/* Coordinates */
+.cg-coords {
+  position: absolute;
+  display: flex;
+  pointer-events: none;
+  z-index: 2;
+  color: #fff;
+  text-shadow: 0 1px 2px #000;
+}
+
+.cg-coords.ranks {
+  left: 0;
+  top: 0;
+  flex-flow: column-reverse;
+  height: 100%;
+  width: 12px;
+}
+
+.cg-coords.ranks.black {
+  flex-flow: column;
+}
+
+.cg-coords.files {
+  bottom: 0px;
+  left: 0;
+  flex-flow: row;
+  width: 100%;
+  height: 16px;
+  text-align: center;
+}
+
+.cg-coords.files.black {
+  flex-flow: row-reverse;
+}
+
+.cg-coords coord {
+  flex: 1 1 auto;
+}
+
+.cg-coords.ranks coord {
+  transform: translateY(39%);
+}
+
+/**
+ * Cburnett
+ */
+.cburnett piece.pawn.white {
+  background-image: url('https://lichess1.org/assets/_MKI2V3/piece/cburnett/wP.svg');
+}
+.cburnett piece.bishop.white {
+  background-image: url('https://lichess1.org/assets/_MKI2V3/piece/cburnett/wB.svg');
+}
+.cburnett piece.knight.white {
+  background-image: url('https://lichess1.org/assets/_MKI2V3/piece/cburnett/wN.svg');
+}
+.cburnett piece.rook.white {
+  background-image: url('https://lichess1.org/assets/_MKI2V3/piece/cburnett/wR.svg');
+}
+.cburnett piece.queen.white {
+  background-image: url('https://lichess1.org/assets/_MKI2V3/piece/cburnett/wQ.svg');
+}
+.cburnett piece.king.white {
+  background-image: url('https://lichess1.org/assets/_MKI2V3/piece/cburnett/wK.svg');
+}
+.cburnett piece.pawn.black {
+  background-image: url('https://lichess1.org/assets/_MKI2V3/piece/cburnett/bP.svg');
+}
+.cburnett piece.bishop.black {
+  background-image: url('https://lichess1.org/assets/_MKI2V3/piece/cburnett/bB.svg');
+}
+.cburnett piece.knight.black {
+  background-image: url('https://lichess1.org/assets/_MKI2V3/piece/cburnett/bN.svg');
+}
+.cburnett piece.rook.black {
+  background-image: url('https://lichess1.org/assets/_MKI2V3/piece/cburnett/bR.svg');
+}
+.cburnett piece.queen.black {
+  background-image: url('https://lichess1.org/assets/_MKI2V3/piece/cburnett/bQ.svg');
+}
+.cburnett piece.king.black {
+  background-image: url('https://lichess1.org/assets/_MKI2V3/piece/cburnett/bK.svg');
+}
+
+/**
+ * Classic
+ */
+.classic piece.pawn.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/classic/150/wp.png');
+}
+.classic piece.bishop.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/classic/150/wb.png');
+}
+.classic piece.knight.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/classic/150/wn.png');
+}
+.classic piece.rook.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/classic/150/wr.png');
+}
+.classic piece.queen.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/classic/150/wq.png');
+}
+.classic piece.king.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/classic/150/wk.png');
+}
+.classic piece.pawn.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/classic/150/bp.png');
+}
+.classic piece.bishop.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/classic/150/bb.png');
+}
+.classic piece.knight.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/classic/150/bn.png');
+}
+.classic piece.rook.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/classic/150/br.png');
+}
+.classic piece.queen.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/classic/150/bq.png');
+}
+.classic piece.king.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/classic/150/bk.png');
+}
+
+/**
+ * Neo
+ */
+.neo piece.pawn.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png');
+}
+.neo piece.bishop.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wb.png');
+}
+.neo piece.knight.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wn.png');
+}
+.neo piece.rook.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wr.png');
+}
+.neo piece.queen.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wq.png');
+}
+.neo piece.king.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wk.png');
+}
+.neo piece.pawn.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png');
+}
+.neo piece.bishop.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bb.png');
+}
+.neo piece.knight.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bn.png');
+}
+.neo piece.rook.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/br.png');
+}
+.neo piece.queen.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bq.png');
+}
+.neo piece.king.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bk.png');
+}
+
+/**
+ * Alpha
+ */
+.alpha piece.pawn.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/alpha/150/wp.png');
+}
+.alpha piece.bishop.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/alpha/150/wb.png');
+}
+.alpha piece.knight.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/alpha/150/wn.png');
+}
+.alpha piece.rook.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/alpha/150/wr.png');
+}
+.alpha piece.queen.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/alpha/150/wq.png');
+}
+.alpha piece.king.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/alpha/150/wk.png');
+}
+.alpha piece.pawn.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/alpha/150/bp.png');
+}
+.alpha piece.bishop.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/alpha/150/bb.png');
+}
+.alpha piece.knight.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/alpha/150/bn.png');
+}
+.alpha piece.rook.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/alpha/150/br.png');
+}
+.alpha piece.queen.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/alpha/150/bq.png');
+}
+.alpha piece.king.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/alpha/150/bk.png');
+}
+
+/**
+ * Bases
+ */
+.bases piece.pawn.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/bases/150/wp.png');
+}
+.bases piece.bishop.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/bases/150/wb.png');
+}
+.bases piece.knight.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/bases/150/wn.png');
+}
+.bases piece.rook.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/bases/150/wr.png');
+}
+.bases piece.queen.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/bases/150/wq.png');
+}
+.bases piece.king.white {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/bases/150/wk.png');
+}
+.bases piece.pawn.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/bases/150/bp.png');
+}
+.bases piece.bishop.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/bases/150/bb.png');
+}
+.bases piece.knight.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/bases/150/bn.png');
+}
+.bases piece.rook.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/bases/150/br.png');
+}
+.bases piece.queen.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/bases/150/bq.png');
+}
+.bases piece.king.black {
+  background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/bases/150/bk.png');
+}
+
+coords {
+  position: absolute;
+  display: flex;
+  pointer-events: none;
+  user-select: none;
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.5rem;
+  opacity: 0.8;
+}
+.coords-no coords {
+  display: none;
+}
+@media (min-width: 640px) {
+  coords {
+    font-size: 0.75rem;
+  }
+}
+coords.ranks {
+  flex-flow: column-reverse;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 0.8em;
+}
+coords.ranks.black {
+  flex-flow: column;
+}
+coords.files {
+  bottom: 0;
+  left: 0;
+  flex-flow: row;
+  width: 100%;
+}
+coords.files.black {
+  flex-flow: row-reverse;
+}
+coords.files coord {
+  padding-left: 4px;
+}
+coords coord {
+  flex: 1 1 auto;
+}
+
+.orientation-white .files coord:nth-child(2n + 1),
+.orientation-white .ranks coord:nth-child(2n),
+.orientation-black .files coord:nth-child(2n),
+.orientation-black .ranks coord:nth-child(2n + 1) {
+  color: #fff;
+}
+.orientation-white .files coord:nth-child(2n),
+.orientation-white .ranks coord:nth-child(2n + 1),
+.orientation-black .files coord:nth-child(2n + 1),
+.orientation-black .ranks coord:nth-child(2n) {
+  color: #779556;
+}
+
+/* Chessground Base CSS */
+.cg-wrap {
+  box-sizing: content-box;
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+cg-board {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  user-select: none;
+  line-height: 0;
+  cursor: pointer;
+}
+
+cg-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+piece {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12.5%;
+  height: 12.5%;
+  background-size: cover;
+  z-index: 2;
+  will-change: transform;
+  pointer-events: none;
+}
+
+square {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12.5%;
+  height: 12.5%;
+  pointer-events: none;
+}
+
+.cg-board square.last-move {
+  will-change: transform;
+  background-color: rgba(246, 246, 130, 0.5);
+}
+
+.cg-board square.check {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 0, 0, 1) 0%,
+    rgba(231, 0, 0, 1) 25%,
+    rgba(169, 0, 0, 0) 89%,
+    rgba(158, 0, 0, 0) 100%
+  );
+}
+
+.cg-board square.selected {
+  background-color: rgba(20, 85, 30, 0.5);
+}
+
+.cg-board piece.dragging {
+  cursor: move;
+  z-index: 9;
+}
+
+.cg-board piece.anim {
+  z-index: 8;
+}
+
+.cg-board piece.fading {
+  z-index: 1;
+  opacity: 0.5;
+}
+
+.next-chessground .chessground {
+  grid-area: board;
+  position: relative;
+  display: block;
+  height: 0;
+  padding-bottom: 100%;
+  padding-right: 100%;
+  width: 100%;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.next-chessground .cg-wrap {
+  display: table;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.next-chessground cg-helper {
+  position: absolute;
+  width: 12.5%;
+  padding-bottom: 12.5%;
+  display: table;
+  bottom: 0;
+}
+
+.next-chessground cg-container {
+  position: absolute;
+  width: 800%;
+  height: 800%;
+  display: block;
+  bottom: 0;
+}
+
+.next-chessground cg-board {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  line-height: 0;
+  background-size: cover;
+  cursor: pointer;
+}
+
+.next-chessground cg-board square {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12.5%;
+  height: 12.5%;
+  pointer-events: none;
+}
+.next-chessground .highlight cg-board square.last-move {
+  will-change: transform;
+  background-color: rgba(246, 246, 130, 0.5);
+}
+.next-chessground .highlight .correct cg-board square.last-move {
+  background-color: rgba(155, 240, 0, 0.4);
+}
+.next-chessground .highlight .incorrect cg-board square.last-move {
+  background-color: rgba(240, 0, 0, 0.4);
+}
+
+.next-chessground cg-board square.check {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 0, 0, 1) 0%,
+    rgba(231, 0, 0, 1) 25%,
+    rgba(169, 0, 0, 0) 89%,
+    rgba(158, 0, 0, 0) 100%
+  );
+}
+.next-chessground cg-board square.current-premove {
+  background-color: rgba(20, 30, 85, 0.5);
+}
+.next-chessground cg-board piece {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12.5%;
+  height: 12.5%;
+  background-size: cover;
+  z-index: 2;
+  will-change: transform;
+  pointer-events: none;
+}
+.next-chessground cg-board piece.dragging {
+  cursor: move;
+  z-index: 9;
+}
+.next-chessground cg-board piece.anim {
+  z-index: 8;
+}
+.next-chessground cg-board piece.fading {
+  z-index: 1;
+  opacity: 0.5;
+}
+.next-chessground cg-board piece.ghost {
+  opacity: 0.3;
+}
+.next-chessground .cg-wrap svg {
+  overflow: hidden;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.6;
+}
+.next-chessground .cg-wrap svg image {
+  opacity: 0.5;
+}
+
+.next-chessground .spare-pieces {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.next-chessground .spare-piece {
+  top: 0;
+  left: 0;
+  padding-bottom: 100%;
+  padding-left: 100%;
+  position: absolute;
+  background-size: contain;
+  background-position: 0% -100%;
+  cursor: pointer;
+}
+.next-chessground .edit-square {
+  display: table;
+  position: relative;
+  width: 14.285%;
+  padding-bottom: 13.285%;
+}
+.next-chessground .promote .edit-square {
+  width: 20%;
+  padding-bottom: 20%;
+}
+
+
+.brown .cg-wrap cg-board {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiAgeG1sbnM6eD0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgIHZpZXdCb3g9IjAgMCA4IDgiICBzaGFwZS1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiI+PHJlY3Qgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iI2I1ODg2MyIvPjxnIGlkPSJhIj4gIDxnIGlkPSJiIj4gICAgPGcgaWQ9ImMiPiAgICAgIDxnIGlkPSJkIj4gICAgICAgIDxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNmMGQ5YjUiIGlkPSJlIi8+ICAgICAgICA8dXNlIHg9IjIiIGhyZWY9IiNlIiB4OmhyZWY9IiNlIi8+ICAgICAgPC9nPiAgICAgIDx1c2UgeD0iNCIgaHJlZj0iI2QiIHg6aHJlZj0iI2QiLz4gICAgPC9nPiAgICA8dXNlIHg9IjEiIHk9IjEiIGhyZWY9IiNjIiB4OmhyZWY9IiNjIi8+ICA8L2c+ICA8dXNlIHk9IjIiIGhyZWY9IiNiIiB4OmhyZWY9IiNiIi8+PC9nPjx1c2UgeT0iNCIgaHJlZj0iI2EiIHg6aHJlZj0iI2EiLz48L3N2Zz4=');
+}
+.green .cg-wrap cg-board {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiAgeG1sbnM6eD0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgIHZpZXdCb3g9IjAgMCA4IDgiICBzaGFwZS1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiI+PHJlY3Qgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzc3OTU1NiIvPjxnIGlkPSJhIj4gIDxnIGlkPSJiIj4gICAgPGcgaWQ9ImMiPiAgICAgIDxnIGlkPSJkIj4gICAgICAgIDxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNFQkVDRDAiIGlkPSJlIi8+ICAgICAgICA8dXNlIHg9IjIiIGhyZWY9IiNlIiB4OmhyZWY9IiNlIi8+ICAgICAgPC9nPiAgICAgIDx1c2UgeD0iNCIgaHJlZj0iI2QiIHg6aHJlZj0iI2QiLz4gICAgPC9nPiAgICA8dXNlIHg9IjEiIHk9IjEiIGhyZWY9IiNjIiB4OmhyZWY9IiNjIi8+ICA8L2c+ICA8dXNlIHk9IjIiIGhyZWY9IiNiIiB4OmhyZWY9IiNiIi8+PC9nPjx1c2UgeT0iNCIgaHJlZj0iI2EiIHg6aHJlZj0iI2EiLz48L3N2Zz4=');
+}
+.ruby .cg-wrap cg-board {
+  background-image: url('data:image/svg+xml;base64,CjxzdmcgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgIHhtbG5zOng9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiICB2aWV3Qm94PSIwIDAgOCA4IiAgc2hhcGUtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM4QjI2MzUiLz48ZyBpZD0iYSI+ICA8ZyBpZD0iYiI+ICAgIDxnIGlkPSJjIj4gICAgICA8ZyBpZD0iZCI+ICAgICAgICA8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjRDJENEM4IiBpZD0iZSIvPiAgICAgICAgPHVzZSB4PSIyIiBocmVmPSIjZSIgeDpocmVmPSIjZSIvPiAgICAgIDwvZz4gICAgICA8dXNlIHg9IjQiIGhyZWY9IiNkIiB4OmhyZWY9IiNkIi8+ICAgIDwvZz4gICAgPHVzZSB4PSIxIiB5PSIxIiBocmVmPSIjYyIgeDpocmVmPSIjYyIvPiAgPC9nPiAgPHVzZSB5PSIyIiBocmVmPSIjYiIgeDpocmVmPSIjYiIvPjwvZz48dXNlIHk9IjQiIGhyZWY9IiNhIiB4OmhyZWY9IiNhIi8+PC9zdmc+');
+}
+.purple .cg-wrap cg-board {
+  background-image: url('data:image/png;base64,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');
+}
+.teal .cg-wrap cg-board {
+  background-image: url('data:image/svg+xml;base64,CjxzdmcgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgIHhtbG5zOng9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiICB2aWV3Qm94PSIwIDAgOCA4IiAgc2hhcGUtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiMxYzcyYWQiLz48ZyBpZD0iYSI+ICA8ZyBpZD0iYiI+ICAgIDxnIGlkPSJjIj4gICAgICA8ZyBpZD0iZCI+ICAgICAgICA8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjZTNlYmYzIiBpZD0iZSIvPiAgICAgICAgPHVzZSB4PSIyIiBocmVmPSIjZSIgeDpocmVmPSIjZSIvPiAgICAgIDwvZz4gICAgICA8dXNlIHg9IjQiIGhyZWY9IiNkIiB4OmhyZWY9IiNkIi8+ICAgIDwvZz4gICAgPHVzZSB4PSIxIiB5PSIxIiBocmVmPSIjYyIgeDpocmVmPSIjYyIvPiAgPC9nPiAgPHVzZSB5PSIyIiBocmVmPSIjYiIgeDpocmVmPSIjYiIvPjwvZz48dXNlIHk9IjQiIGhyZWY9IiNhIiB4OmhyZWY9IiNhIi8+PC9zdmc+');
 }

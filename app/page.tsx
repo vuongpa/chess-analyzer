@@ -57,24 +57,48 @@ export default function Home() {
     setIsUploading(true);
     
     try {
+      const file = data.file[0];
+      
+      // Read file content before sending to server
+      const pgnContent = await readFileAsText(file);
+      
+      // Store PGN content in localStorage to access it in analysis page
+      localStorage.setItem('pgnContent', pgnContent);
+      localStorage.setItem('pgnFileName', file.name);
+      
       const formData = new FormData();
-      formData.append("file", data.file[0]); 
+      formData.append("file", file); 
       
       const result = await uploadPgn(formData);
       setUploadStatus(result);
       
       if (result.success) {
         reset();
+        
+        // Navigate to analysis page with the PGN already in localStorage
+        if (result.redirectUrl) {
+          window.location.href = result.redirectUrl;
+        }
       }
     } catch (error: unknown) {
       console.error('Upload error:', error);
       setUploadStatus({ 
         success: false, 
-        message: 'An error occurred during upload'
+        message: 'An error occurred while processing the file'
       });
     } finally {
       setIsUploading(false);
     }
+  };
+  
+  // Helper function to read file as text
+  const readFileAsText = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => resolve(event.target?.result as string);
+      reader.onerror = (error) => reject(error);
+      reader.readAsText(file);
+    });
   };
 
   return (

@@ -22,22 +22,23 @@ export async function uploadPgn(formData: FormData) {
       };
     }
     
-    // In the future, we'll add logic here to analyze the file
-    // For now, we just return success
+    // We don't need to store the file on the server
+    // Just return success and let the client handle the file
     
     // Revalidate the page to reflect any changes
     revalidatePath('/');
     
     return { 
       success: true, 
-      message: 'File uploaded successfully',
-      fileName: file.name
+      message: 'File loaded successfully, redirecting to analysis...',
+      fileName: file.name,
+      redirectUrl: `/analysis`
     };
   } catch (error) {
-    console.error('Error uploading file:', error);
+    console.error('Error processing file:', error);
     return { 
       success: false, 
-      message: 'Error uploading file' 
+      message: 'Error processing file' 
     };
   }
 }

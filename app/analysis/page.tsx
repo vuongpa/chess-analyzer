@@ -1,0 +1,339 @@
+'use client';
+
+import { NextChessboard } from '@/components/chessground';
+import { DefaultLayout } from '@/components/default-layout';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Chess } from 'chess.js';
+import {
+  BarChart2,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Pause,
+  Play,
+  RefreshCcw
+} from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+
+interface MoveHistory {
+  san: string;
+  fen: string;
+  move: {
+    from: string;
+    to: string;
+    color: string;
+    flags: string;
+    piece: string;
+    san: string;
+    lan: string;
+  };
+  turn: 'w' | 'b';
+  moveNumber: number;
+}
+
+export default function AnalysisPage() {
+  const [chessInstance] = useState<Chess>(new Chess());
+  const [fen, setFen] = useState('start');
+  const [pgn, setPgn] = useState('');
+  const [history, setHistory] = useState<MoveHistory[]>([]);
+  const [currentMove, setCurrentMove] = useState(-1);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const playIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [orientation, setOrientation] = useState<'white' | 'black'>('white');
+  
+  const loadPgn = (pgnContent: string) => {
+    try {
+      chessInstance.loadPgn(pgnContent);
+      setPgn(pgnContent);
+      
+      const moves = [];
+      const tempChess = new Chess();
+      
+      for (const move of chessInstance.history({ verbose: true })) {
+        tempChess.move(move);
+        const fen = tempChess.fen();
+        const turn = tempChess.turn();
+        const moveNumber = Math.floor((tempChess.moveNumber() + (turn === 'b' ? 0 : 1)) / 2);
+        
+        moves.push({
+          san: move.san,
+          fen,
+          move,
+          turn,
+          moveNumber
+        });
+      }
+      
+      setHistory(moves);
+      setFen(tempChess.fen());
+      setCurrentMove(moves.length - 1);
+      
+      setOrientation(tempChess.turn() === 'w' ? 'black' : 'white');
+    } catch (error) {
+      console.error('Error loading PGN:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      chessInstance.reset();
+      const storedPgn = localStorage.getItem('pgnContent');
+      if (storedPgn) {
+        loadPgn(storedPgn);
+      } else {
+        const samplePgn = `[Event "Live Chess"]
+          [Site "Chess.com"]
+          [Date "2023.09.15"]
+          [Round "?"]
+          [White "Player1"]
+          [Black "Player2"]
+          [Result "1-0"]
+          [ECO "B01"]
+          [WhiteElo "1600"]
+          [BlackElo "1550"]
+          [TimeControl "180"]
+          [EndTime "12:20:15"]
+          [Termination "Player1 won by checkmate"]
+
+          1. e4 d5 2. exd5 Qxd5 3. Nc3 Qd8 4. d4 Nf6 5. Nf3 Bg4 6. Be2 e6 7. O-O Be7 
+          8. h3 Bh5 9. Be3 O-O 10. Qd2 c6 11. Rad1 Nbd7 12. Ne5 Bxe2 13. Qxe2 Nxe5 
+          14. dxe5 Nd5 15. Nxd5 Qxd5 16. c4 Qc5 17. Qc2 Rad8 18. b4 Qe7 19. c5 Rd5 
+          20. Rd3 Rfd8 21. Rfd1 f6 22. exf6 Qxf6 23. Rxd5 Rxd5 24. Rxd5 exd5 25. Qd3 Qe6 
+          26. f4 h6 27. Qxd5 Qxd5 28. Bxh6 Qd1+ 29. Kh2 Qd4 30. Be3 Qe4 31. g3 Qe6 
+          32. Kg2 Bf6 33. Kf3 Kf7 34. h4 g5 35. hxg5 Bxg5 36. fxg5 Qc4 37. Bd4 Qc1 
+          38. Ke4 Qe1+ 39. Be3 Qc3 40. Kd5 Qb3+ 41. Kd6 Qb8+ 42. Kd7 Qb5+ 43. c6 Qb6 
+          44. Kc8 a5 45. Bf4 Qf2 46. Bd6 bxc6 47. bxa5 Qe2 48. a6 Qe8+ 49. Kb7 Qb5+ 
+          50. Ka7 Qc5+ 51. Kb7 Qb5+ 52. Kc8 Qe8+ 53. Kb7 Qb5+ 54. Ka8 c5 55. a7 c4 
+          56. Bf4 Kg6 57. Bd2 Kh5 58. Kb7 Qd5+ 59. Kc8 Qe6+ 60. Kb8 Qd6+ 61. Kc8 Qe6+ 
+          62. Kd8 Qd6+ 63. Ke8 Qc6+ 64. Kf7 Qd7+ 65. Kf6 Qd6+ 66. Kf5 Qd7+ 67. Kf4 Qd6+ 
+          68. Kf3 Qd5+ 69. Kg2 Qd6 70. Kh3 Qd3+ 71. Kh2 Qd6 72. Be3 Kg4 73. Kg2 Qc5 
+          74. Bb6 Qb5 75. Bc5 Qb2+ 76. Kh1 Kf3 77. g6 Qc1+ 78. Kh2 Qf4+ 79. Kh3 c3 
+          80. g7 Qf5+ 81. Kh4 Qf6+ 82. Kh5 Qf3+ 83. g4+ Qxg4# 0-1`;
+        loadPgn(samplePgn);
+      }
+    }
+    
+    return () => {
+      if (playIntervalRef.current) {
+        clearInterval(playIntervalRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (currentMove >= 0 && currentMove < history.length) {
+      setFen(history[currentMove].fen);
+    } else if (currentMove === -1) {
+      setFen('start');
+    }
+  }, [currentMove, history]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      playIntervalRef.current = setInterval(() => {
+        setCurrentMove((prev) => {
+          if (prev >= history.length - 1) {
+            setIsPlaying(false);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    } else if (playIntervalRef.current) {
+      clearInterval(playIntervalRef.current);
+    }
+    
+    return () => {
+      if (playIntervalRef.current) {
+        clearInterval(playIntervalRef.current);
+      }
+    };
+  }, [isPlaying, history.length]);
+
+  const goToStart = () => setCurrentMove(-1);
+  const goToEnd = () => setCurrentMove(history.length - 1);
+  const goToPrevMove = () => setCurrentMove((prev) => Math.max(-1, prev - 1));
+  const goToNextMove = () => setCurrentMove((prev) => Math.min(history.length - 1, prev + 1));
+  const togglePlay = () => setIsPlaying((prev) => !prev);
+  const goToMove = (index: number) => setCurrentMove(index);
+  const flipBoard = () => setOrientation(prev => prev === 'white' ? 'black' : 'white');
+
+  const getMoveItemClass = (index: number) => {
+    return `px-2 py-1 rounded cursor-pointer ${currentMove === index ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'}`;
+  };
+
+  return (
+    <DefaultLayout>
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left column - Chess board */}
+          <div className="lg:col-span-2">
+            <Card>
+              <CardContent className="p-4">
+                <div className="aspect-square w-full relative">
+                  {/* Board coordinates */}
+                  <div className="absolute top-0 bottom-0 left-0 z-10 flex flex-col justify-around pointer-events-none">
+                    {orientation === 'white' ? 
+                      ['8', '7', '6', '5', '4', '3', '2', '1'].map(num => (
+                        <div key={num} className="text-xs opacity-70 w-4 text-center">{num}</div>
+                      )) : 
+                      ['1', '2', '3', '4', '5', '6', '7', '8'].map(num => (
+                        <div key={num} className="text-xs opacity-70 w-4 text-center">{num}</div>
+                      ))
+                    }
+                  </div>
+                  <div className="absolute left-0 right-0 bottom-0 z-10 flex justify-around pointer-events-none">
+                    {orientation === 'white' ? 
+                      ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map(letter => (
+                        <div key={letter} className="text-xs opacity-70 h-4 text-center">{letter}</div>
+                      )) : 
+                      ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'].map(letter => (
+                        <div key={letter} className="text-xs opacity-70 h-4 text-center">{letter}</div>
+                      ))
+                    }
+                  </div>
+                  
+                  <div className="h-full w-full">
+                    <NextChessboard 
+                      fen={fen}
+                      orientation={orientation}
+                      lastMove={
+                        currentMove >= 0 && currentMove < history.length ? 
+                        {
+                          from: history[currentMove].move.from,
+                          to: history[currentMove].move.to
+                        } : undefined
+                      }
+                      onFenChange={(newFen) => {
+                        console.log('FEN updated:', newFen);
+                      }}
+                      readOnly={true}
+                    />
+                  </div>
+                </div>
+                
+                <div className="mt-4 flex justify-between items-center">
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="icon" onClick={goToStart} title="Go to start">
+                      <ChevronsLeft className="h-6 w-6" />
+                    </Button>
+                    <Button variant="outline" size="icon" onClick={goToPrevMove} title="Previous move">
+                      <ChevronLeft className="h-6 w-6" />
+                    </Button>
+                    <Button variant="outline" size="icon" onClick={togglePlay} title={isPlaying ? "Pause" : "Play"}>
+                      {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+                    </Button>
+                    <Button variant="outline" size="icon" onClick={goToNextMove} title="Next move">
+                      <ChevronRight className="h-6 w-6" />
+                    </Button>
+                    <Button variant="outline" size="icon" onClick={goToEnd} title="Go to end">
+                      <ChevronsRight className="h-6 w-6" />
+                    </Button>
+                  </div>
+                  <Button variant="outline" size='icon' onClick={flipBoard} title="Flip board">
+                    <RefreshCcw className="h-10 w-10" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="lg:col-span-1">
+            <Card className="h-full">
+              <Tabs defaultValue="moves" className="h-full flex flex-col">
+                <TabsList className="grid grid-cols-3">
+                  <TabsTrigger value="moves">Moves</TabsTrigger>
+                  <TabsTrigger value="evaluation">Evaluation</TabsTrigger>
+                  <TabsTrigger value="info">Game Info</TabsTrigger>
+                </TabsList>
+                <TabsContent value="moves" className="flex-1">
+                  <ScrollArea className="h-[70vh]">
+                    <div className="p-4">
+                      <div className="grid grid-cols-[auto_1fr_1fr] gap-1">
+                        <div className="font-medium">#</div>
+                        <div className="font-medium">White</div>
+                        <div className="font-medium">Black</div>
+                        
+                        <Separator className="col-span-3 my-2" />
+                        {Array.from({ length: Math.ceil(history.length / 2) }).map((_, i) => {
+                          const moveNum = i + 1;
+                          const whiteIdx = i * 2;
+                          const blackIdx = i * 2 + 1;
+                          
+                          return (
+                            <React.Fragment key={moveNum}>
+                              <div className="text-muted-foreground">{moveNum}.</div>
+                              <div 
+                                className={whiteIdx < history.length ? getMoveItemClass(whiteIdx) : ''}
+                                onClick={() => whiteIdx < history.length && goToMove(whiteIdx)}
+                              >
+                                {whiteIdx < history.length ? history[whiteIdx].san : ''}
+                              </div>
+                              <div 
+                                className={blackIdx < history.length ? getMoveItemClass(blackIdx) : ''}
+                                onClick={() => blackIdx < history.length && goToMove(blackIdx)}
+                              >
+                                {blackIdx < history.length ? history[blackIdx].san : ''}
+                              </div>
+                            </React.Fragment>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+                <TabsContent value="evaluation" className="flex-1">
+                  <ScrollArea className="h-[70vh]">
+                    <div className="p-4 flex flex-col items-center justify-center h-full">
+                      <div className="text-center text-muted-foreground">
+                        <BarChart2 className="h-12 w-12 mx-auto mb-4" />
+                        <p>Evaluation feature will be implemented in the next phase</p>
+                        <p className="text-sm mt-2">This will show engine analysis of the current position</p>
+                      </div>
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+                <TabsContent value="info" className="flex-1">
+                  <ScrollArea className="h-[70vh]">
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold mb-2">Game Information</h3>
+                      <div className="space-y-2">
+                        {/* Display file name if available */}
+                        {typeof window !== 'undefined' && localStorage.getItem('pgnFileName') && (
+                          <div className="grid grid-cols-[120px_1fr]">
+                            <div className="text-muted-foreground">File:</div>
+                            <div>{localStorage.getItem('pgnFileName')}</div>
+                          </div>
+                        )}
+                        <Separator className="my-2" />
+                        {pgn.split('\n').slice(0, 10).map((line, i) => {
+                          if (line.startsWith('[') && line.includes('"')) {
+                            const key = line.substring(1, line.indexOf(' '));
+                            const value = line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
+                            
+                            return (
+                              <div key={i} className="grid grid-cols-[120px_1fr]">
+                                <div className="text-muted-foreground">{key}:</div>
+                                <div>{value}</div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })}
+                      </div>
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+              </Tabs>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </DefaultLayout>
+  );
+}
