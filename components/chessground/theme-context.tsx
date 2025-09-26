@@ -4,7 +4,7 @@ const local = store.local;
 
 const defaultTheme = {
   board: 'brown',
-  pieces: 'cburnett',
+  pieces: 'neo',
   coordinates: true,
   highlight: true,
   playSounds: true,

@@ -181,132 +181,125 @@ export default function AnalysisPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left column - Chess board */}
           <div className="lg:col-span-2">
-            <Card>
-              <CardContent className="p-4">
-                <div className="aspect-square w-full relative">
-                  {/* Board coordinates */}
-                  <div className="absolute top-0 bottom-0 left-0 z-10 flex flex-col justify-around pointer-events-none">
-                    {orientation === "white"
-                      ? ["8", "7", "6", "5", "4", "3", "2", "1"].map((num) => (
-                          <div
-                            key={num}
-                            className="text-xs opacity-70 w-4 text-center"
-                          >
-                            {num}
-                          </div>
-                        ))
-                      : ["1", "2", "3", "4", "5", "6", "7", "8"].map((num) => (
-                          <div
-                            key={num}
-                            className="text-xs opacity-70 w-4 text-center"
-                          >
-                            {num}
-                          </div>
-                        ))}
-                  </div>
-                  {orientation === "white" && (
-                    <div className="absolute left-0 right-0 bottom-0 z-10 flex justify-around pointer-events-none">
-                      {["a", "b", "c", "d", "e", "f", "g", "h"].map(
-                        (letter) => (
-                          <div
-                            key={letter}
-                            className="text-xs opacity-70 h-4 text-center"
-                          >
-                            {letter}
-                          </div>
-                        )
-                      )}
+            <div className="aspect-square w-full relative">
+              {/* Board coordinates */}
+              <div className="absolute top-0 bottom-0 left-0 z-10 flex flex-col justify-around pointer-events-none">
+                {orientation === "white"
+                  ? ["8", "7", "6", "5", "4", "3", "2", "1"].map((num) => (
+                      <div
+                        key={num}
+                        className="text-xs opacity-70 w-4 text-center"
+                      >
+                        {num}
+                      </div>
+                    ))
+                  : ["1", "2", "3", "4", "5", "6", "7", "8"].map((num) => (
+                      <div
+                        key={num}
+                        className="text-xs opacity-70 w-4 text-center"
+                      >
+                        {num}
+                      </div>
+                    ))}
+              </div>
+              {orientation === "white" && (
+                <div className="absolute left-0 right-0 bottom-0 z-10 flex justify-around pointer-events-none">
+                  {["a", "b", "c", "d", "e", "f", "g", "h"].map((letter) => (
+                    <div
+                      key={letter}
+                      className="text-xs opacity-70 h-4 text-center"
+                    >
+                      {letter}
                     </div>
-                  )}
-                  {orientation === "black" && (
-                    <div className="absolute left-0 right-0 top-0 z-10 flex justify-around pointer-events-none">
-                      {["h", "g", "f", "e", "d", "c", "b", "a"].map(
-                        (letter) => (
-                          <div
-                            key={letter}
-                            className="text-xs opacity-70 h-4 text-center"
-                          >
-                            {letter}
-                          </div>
-                        )
-                      )}
+                  ))}
+                </div>
+              )}
+              {orientation === "black" && (
+                <div className="absolute left-0 right-0 top-0 z-10 flex justify-around pointer-events-none">
+                  {["h", "g", "f", "e", "d", "c", "b", "a"].map((letter) => (
+                    <div
+                      key={letter}
+                      className="text-xs opacity-70 h-4 text-center"
+                    >
+                      {letter}
                     </div>
-                  )}
-
-                  <div className="h-full w-full z-99">
-                    <NextChessboard
-                      fen={fen}
-                      orientation={orientation}
-                      lastMove={
-                        currentMove >= 0 && currentMove < history.length
-                          ? {
-                              from: history[currentMove].move.from,
-                              to: history[currentMove].move.to,
-                            }
-                          : undefined
-                      }
-                      onFenChange={(newFen) => {
-                        console.log("FEN updated:", newFen);
-                      }}
-                      readOnly={true}
-                    />
-                  </div>
+                  ))}
                 </div>
+              )}
 
-                <div className="mt-4 flex justify-between items-center">
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={goToStart}
-                      title="Go to start"
-                    >
-                      <ChevronsLeft />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={goToPrevMove}
-                      title="Previous move"
-                    >
-                      <ChevronLeft />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={togglePlay}
-                      title={isPlaying ? "Pause" : "Play"}
-                    >
-                      {isPlaying ? <Pause /> : <Play />}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={goToNextMove}
-                      title="Next move"
-                    >
-                      <ChevronRight />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={goToEnd}
-                      title="Go to end"
-                    >
-                      <ChevronsRight />
-                    </Button>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={flipBoard}
-                    title="Flip board"
-                  >
-                    <RefreshCcw />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+              <div className="h-full w-full z-99">
+                <NextChessboard
+                  fen={fen}
+                  orientation={orientation}
+                  lastMove={
+                    currentMove >= 0 && currentMove < history.length
+                      ? {
+                          from: history[currentMove].move.from,
+                          to: history[currentMove].move.to,
+                        }
+                      : undefined
+                  }
+                  onFenChange={(newFen) => {
+                    console.log("FEN updated:", newFen);
+                  }}
+                  readOnly={false}
+                  viewOnly={true}
+                />
+              </div>
+            </div>
+
+            <div className="mt-4 flex justify-between items-center">
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={goToStart}
+                  title="Go to start"
+                >
+                  <ChevronsLeft />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={goToPrevMove}
+                  title="Previous move"
+                >
+                  <ChevronLeft />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={togglePlay}
+                  title={isPlaying ? "Pause" : "Play"}
+                >
+                  {isPlaying ? <Pause /> : <Play />}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={goToNextMove}
+                  title="Next move"
+                >
+                  <ChevronRight />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={goToEnd}
+                  title="Go to end"
+                >
+                  <ChevronsRight />
+                </Button>
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={flipBoard}
+                title="Flip board"
+              >
+                <RefreshCcw />
+              </Button>
+            </div>
           </div>
 
           <div className="lg:col-span-1">

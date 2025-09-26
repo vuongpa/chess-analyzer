@@ -3,6 +3,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
+  useState,
 } from 'react';
 import { cn } from '@/lib/utils';
 import Theme from './theme';
@@ -16,7 +17,7 @@ import cgProps from './cg-props';
 import audio from './audio';
 import Advanced from './advanced';
 import useOrientation from './use-orientation';
-import { Chess } from 'chess.js';
+import { Chess, Square } from 'chess.js';
 import { Key } from 'chessground/types';
 
 export interface ChessboardComponentProps {
@@ -44,6 +45,7 @@ const Chessboard = forwardRef<ChessboardRef, ChessboardComponentProps>((props, r
   const { theme } = useChessground();
   const { isOpen, show, hide } = useDisclosure();
   const [orientation, flip] = useOrientation(props);
+  const [selectedSquare, setSelectedSquare] = useState<Key | null>(null);
 
   const {
     chess,
@@ -76,6 +78,35 @@ const Chessboard = forwardRef<ChessboardRef, ChessboardComponentProps>((props, r
     if (typeof props.onMove === 'function') {
       await props.onMove(chess);
     }
+    setSelectedSquare(null);
+  };
+
+  const handleSquareClick = (square: Key) => {
+    console.log('handleSquareClick', square);
+    const piece = chess.get(square as Square);
+    const dests = toDests(chess);
+    if (piece && dests.has(square)) {
+      setSelectedSquare(square);
+    } else if (selectedSquare && dests.get(selectedSquare)?.includes(square)) {
+      if (!props.readOnly && !props.viewOnly) {
+        handleMove(selectedSquare, square);
+      } else {
+        setSelectedSquare(null);
+      }
+    } else {
+      setSelectedSquare(null);
+    }
+  };
+
+  const getArrows = () => {
+    if (!selectedSquare) return [];
+    const dests = toDests(chess);
+    const possibleMoves = dests.get(selectedSquare) || [];
+    return possibleMoves.map(dest => ({
+      orig: selectedSquare,
+      dest,
+      brush: 'blue'
+    }));
   };
 
   const handlePromotion = async (promotion: string) => {
@@ -104,6 +135,10 @@ const Chessboard = forwardRef<ChessboardRef, ChessboardComponentProps>((props, r
     }
   }, [fen, props]);
 
+  useEffect(() => {
+    setSelectedSquare(null);
+  }, [fen]);
+
   return (
     <Theme>
       <div className="next-chessground container mx-auto">
@@ -119,14 +154,20 @@ const Chessboard = forwardRef<ChessboardRef, ChessboardComponentProps>((props, r
             ref={boardRef}
             coordinates={theme.coordinates}
             onMove={handleMove}
+            onSelect={handleSquareClick}
             fen={fen}
             turnColor={turnColor}
             lastMove={lastMove}
             orientation={orientation}
+            drawable={{
+              enabled: true,
+              visible: true,
+              autoShapes: getArrows(),
+            }}
             movable={{ 
-              dests: toDests(chess),
-              showDests: true,
-              color: turnColor
+              dests: (props.readOnly || props.viewOnly) ? new Map() : toDests(chess),
+              showDests: selectedSquare ? false : !props.readOnly && !props.viewOnly,
+              color: (props.readOnly || props.viewOnly) ? undefined : turnColor
             }}
             {...cgProps(props)}
           />
@@ -137,7 +178,6 @@ const Chessboard = forwardRef<ChessboardRef, ChessboardComponentProps>((props, r
             onPromote={handlePromotion}
           />
         </div>
-        <Advanced flip={flip} readOnly={props.readOnly} />
       </div>
     </Theme>
   );

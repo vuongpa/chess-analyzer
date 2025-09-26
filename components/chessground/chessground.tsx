@@ -16,6 +16,7 @@ interface ChessgroundProps extends Partial<Config> {
   className?: string;
   children?: React.ReactNode;
   onMove?: (orig: Key, dest: Key, capturedPiece?: unknown) => void;
+  onSelect?: (square: Key) => void;
 }
 
 const Chessground = forwardRef<{ board: Api | undefined }, ChessgroundProps>(
@@ -30,7 +31,18 @@ const Chessground = forwardRef<{ board: Api | undefined }, ChessgroundProps>(
     useEffect(() => {
       if (boardRef.current) {
         const config: Config = {
-          ...props,
+          fen: props.fen,
+          orientation: props.orientation,
+          turnColor: props.turnColor,
+          check: props.check,
+          lastMove: props.lastMove,
+          coordinates: props.coordinates,
+          viewOnly: props.viewOnly,
+          movable: props.movable,
+          drawable: props.drawable,
+          events: {
+            select: props.onSelect,
+          },
         };
         
         board.current = ChessgroundLib(boardRef.current, config);
@@ -41,12 +53,23 @@ const Chessground = forwardRef<{ board: Api | undefined }, ChessgroundProps>(
           board.current.destroy();
         }
       };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
       if (board.current) {
         board.current.set({
-          ...props,
+          fen: props.fen,
+          orientation: props.orientation,
+          turnColor: props.turnColor,
+          check: props.check,
+          lastMove: props.lastMove,
+          coordinates: props.coordinates,
+          viewOnly: props.viewOnly,
+          drawable: props.drawable,
+          events: {
+            select: props.onSelect,
+          },
         });
       }
     }, [
@@ -57,6 +80,8 @@ const Chessground = forwardRef<{ board: Api | undefined }, ChessgroundProps>(
       props.lastMove,
       props.coordinates,
       props.viewOnly,
+      props.onSelect,
+      props.drawable,
     ]);
 
     useEffect(() => {
