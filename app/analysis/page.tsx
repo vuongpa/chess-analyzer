@@ -318,6 +318,20 @@ export default function AnalysisPage() {
     currentMove < history.length &&
     (currentEvaluation || isAnalyzing || currentAnalysis);
 
+  const bestMoveArrow = useMemo(() => {
+    if (
+      currentMove >= 0 &&
+      currentAnalysis?.bestMoveFromSquare &&
+      currentAnalysis?.bestMoveToSquare
+    ) {
+      return {
+        from: currentAnalysis.bestMoveFromSquare,
+        to: currentAnalysis.bestMoveToSquare,
+      };
+    }
+    return null;
+  }, [currentMove, currentAnalysis]);
+
   return (
     <DefaultLayout>
       <div className="container mx-auto">
@@ -343,6 +357,13 @@ export default function AnalysisPage() {
                         }
                       : undefined
                   }
+                  moveEvaluation={currentEvaluation || undefined}
+                  showEvaluationOnSquare={
+                    currentMove >= 0 && currentMove < history.length
+                      ? history[currentMove].move.to
+                      : undefined
+                  }
+                  bestMoveArrow={bestMoveArrow}
                   onFenChange={(newFen) => {
                     console.log("FEN updated:", newFen);
                   }}
@@ -577,7 +598,7 @@ export default function AnalysisPage() {
                     {/* Display file name if available */}
                     {typeof window !== "undefined" &&
                       localStorage.getItem("pgnFileName") && (
-                        <div className="grid grid-cols-[80px_1fr]">
+                        <div className="grid grid-cols-[100px_1fr]">
                           <div className="text-muted-foreground">File</div>
                           <div>{localStorage.getItem("pgnFileName")}</div>
                         </div>
@@ -595,7 +616,7 @@ export default function AnalysisPage() {
                           );
 
                           return (
-                            <div key={i} className="grid grid-cols-[80px_1fr]">
+                            <div key={i} className="grid grid-cols-[100px_1fr]">
                               <div className="text-muted-foreground">{key}</div>
                               <div>{value}</div>
                             </div>

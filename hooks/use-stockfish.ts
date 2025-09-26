@@ -10,6 +10,8 @@ export interface AnalysisResult {
   nodes: number;
   nps: number;
   time: number;
+  bestMoveFromSquare?: string;
+  bestMoveToSquare?: string;
 }
 
 export interface MoveEvaluation {
@@ -39,7 +41,14 @@ export const useStockfish = () => {
     } else if (message.startsWith('bestmove')) {
       setIsAnalyzing(false);
       const bestMove = message.split(' ')[1];
-      setCurrentAnalysis(prev => prev ? { ...prev, bestMove } : null);
+      const fromSquare = bestMove?.substring(0, 2);
+      const toSquare = bestMove?.substring(2, 4);
+      setCurrentAnalysis(prev => prev ? { 
+        ...prev, 
+        bestMove,
+        bestMoveFromSquare: fromSquare,
+        bestMoveToSquare: toSquare
+      } : null);
     }
   }, []);
 

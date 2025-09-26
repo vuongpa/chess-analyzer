@@ -18,6 +18,8 @@ import audio from './audio';
 import useOrientation from './use-orientation';
 import { Chess, Square } from 'chess.js';
 import { Key } from 'chessground/types';
+import MoveEvaluationOverlay from './move-evaluation-overlay';
+import { MoveEvaluation } from '@/hooks/use-stockfish';
 
 export interface ChessboardComponentProps {
   fen?: string;
@@ -30,6 +32,9 @@ export interface ChessboardComponentProps {
   onFenChange?: (fen: string) => void;
   setPromoting?: (isPromoting: boolean) => void;
   className?: string;
+  moveEvaluation?: MoveEvaluation;
+  showEvaluationOnSquare?: string;
+  bestMoveArrow?: { from: string; to: string } | null; // arrow for suggested move
 }
 
 import type { Api } from 'chessground/api';
@@ -43,8 +48,9 @@ interface ChessboardRef {
 const Chessboard = forwardRef<ChessboardRef, ChessboardComponentProps>((props, ref) => {
   const { theme } = useChessground();
   const { isOpen, show, hide } = useDisclosure();
-  const [orientation, flip] = useOrientation(props);
+  const [orientation] = useOrientation(props);
   const [selectedSquare, setSelectedSquare] = useState<Key | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const {
     chess,
@@ -98,14 +104,27 @@ const Chessboard = forwardRef<ChessboardRef, ChessboardComponentProps>((props, r
   };
 
   const getArrows = () => {
-    if (!selectedSquare) return [];
-    const dests = toDests(chess);
-    const possibleMoves = dests.get(selectedSquare) || [];
-    return possibleMoves.map(dest => ({
-      orig: selectedSquare,
-      dest,
-      brush: 'blue'
-    }));
+    const shapes: { orig: Key; dest: Key; brush: string }[] = [];
+
+    // Show possible destination blue hints when selecting (optional - keep or remove)
+    if (selectedSquare) {
+      const dests = toDests(chess);
+      const possibleMoves = dests.get(selectedSquare) || [];
+      possibleMoves.forEach(dest => {
+        shapes.push({ orig: selectedSquare, dest, brush: 'blue' });
+      });
+    }
+
+    // Best move arrow (green) provided from parent after engine analysis of current position
+    if (props.bestMoveArrow && !selectedSquare) {
+      shapes.push({
+        orig: props.bestMoveArrow.from as Key,
+        dest: props.bestMoveArrow.to as Key,
+        brush: 'green'
+      });
+    }
+
+    return shapes;
   };
 
   const handlePromotion = async (promotion: string) => {
@@ -137,18 +156,22 @@ const Chessboard = forwardRef<ChessboardRef, ChessboardComponentProps>((props, r
   useEffect(() => {
     setSelectedSquare(null);
   }, [fen]);
+  console.log('showEvaluationOnSquare',props.showEvaluationOnSquare)
+  console.log('moveEvaluation',props.moveEvaluation)
 
   return (
     <Theme>
       <div className="next-chessground container mx-auto">
-        <div className={cn(
-          'chessground',
-          theme.highlight && 'highlight',
-          props.className,
-          theme.pieces,
-          theme.board,
-          theme.coordinates ? '' : 'coords-no',
-        )}>
+        <div 
+          ref={containerRef}
+          className={cn(
+            'chessground relative',
+            theme.highlight && 'highlight',
+            props.className,
+            theme.pieces,
+            theme.board,
+            theme.coordinates ? '' : 'coords-no',
+          )}>
           <Chessground
             ref={boardRef}
             coordinates={theme.coordinates}
@@ -170,6 +193,15 @@ const Chessboard = forwardRef<ChessboardRef, ChessboardComponentProps>((props, r
             }}
             {...cgProps(props)}
           />
+          
+          {(props.moveEvaluation && props.showEvaluationOnSquare) ? (
+            <MoveEvaluationOverlay
+              evaluation={props.moveEvaluation}
+              square={props.showEvaluationOnSquare}
+              orientation={orientation}
+            />
+          ) : null}
+          
           <Promote
             isOpen={isOpen}
             hide={hide}
