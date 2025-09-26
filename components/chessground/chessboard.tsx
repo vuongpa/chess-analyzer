@@ -15,7 +15,6 @@ import Promote from './promote';
 import useDisclosure from './use-disclosure';
 import cgProps from './cg-props';
 import audio from './audio';
-import Advanced from './advanced';
 import useOrientation from './use-orientation';
 import { Chess, Square } from 'chess.js';
 import { Key } from 'chessground/types';

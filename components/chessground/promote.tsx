@@ -10,7 +10,7 @@ interface PromoteProps {
 
 const promotionPieces = ['q', 'r', 'n', 'b'];
 
-const Promote = forwardRef<HTMLDivElement, PromoteProps>(({ isOpen, hide, color, onPromote }, _ref) => {
+const Promote = forwardRef<HTMLDivElement, PromoteProps>(({ isOpen, hide, color, onPromote }, ref) => {
   const handlePromotion = (piece: string) => {
     onPromote(piece);
     hide();
@@ -38,7 +38,7 @@ const Promote = forwardRef<HTMLDivElement, PromoteProps>(({ isOpen, hide, color,
     <Dialog open={isOpen} onOpenChange={(open) => !open && hide()}>
       <DialogContent className="sm:max-w-md">
         <DialogTitle className="text-center">Choose a piece for promotion</DialogTitle>
-        <div className="flex justify-center mt-4">{pieces}</div>
+        <div ref={ref} className="flex justify-center mt-4">{pieces}</div>
       </DialogContent>
     </Dialog>
   );
