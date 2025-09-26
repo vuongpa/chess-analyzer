@@ -7,6 +7,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MoveAnalysis } from "@/components/move-analysis";
+import { GameEvaluationChart } from "@/components/game-evaluation-chart";
+import { MoveEvaluationLegend } from "@/components/move-evaluation-legend";
+import { useStockfish, MoveEvaluation } from "@/hooks/use-stockfish";
 import { Chess } from "chess.js";
 import {
   BarChart2,
@@ -17,8 +21,10 @@ import {
   Pause,
   Play,
   RefreshCcw,
+  Zap,
+  AlertCircle
 } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 
 interface MoveHistory {
   san: string;
@@ -45,8 +51,21 @@ export default function AnalysisPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const playIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [orientation, setOrientation] = useState<"white" | "black">("white");
+  
+  // Stockfish integration
+  const { 
+    isReady, 
+    isAnalyzing, 
+    currentAnalysis, 
+    analyzePosition, 
+    error: stockfishError 
+  } = useStockfish();
+  
+  const [moveEvaluations, setMoveEvaluations] = useState<(MoveEvaluation | null)[]>([]);
+  const [isAnalyzingGame, setIsAnalyzingGame] = useState(false);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
 
-  const loadPgn = (pgnContent: string) => {
+  const loadPgn = useCallback((pgnContent: string) => {
     try {
       chessInstance.loadPgn(pgnContent);
       setPgn(pgnContent);
@@ -74,11 +93,93 @@ export default function AnalysisPage() {
       setHistory(moves);
       setFen(tempChess.fen());
       setCurrentMove(moves.length - 1);
+      setMoveEvaluations(new Array(moves.length).fill(null));
 
       setOrientation(tempChess.turn() === "w" ? "black" : "white");
     } catch (error) {
       console.error("Error loading PGN:", error);
     }
+  }, [chessInstance]);
+
+  // Analyze entire game
+  const analyzeGame = async () => {
+    if (!isReady || history.length === 0) return;
+    
+    setIsAnalyzingGame(true);
+    setAnalysisProgress(0);
+    
+    const evaluations: (MoveEvaluation | null)[] = new Array(history.length).fill(null);
+    
+    // Get position evaluations for each move
+    for (let i = 0; i < history.length; i++) {
+      setAnalysisProgress(((i + 1) / history.length) * 100);
+      
+      // Simulate analysis (in a real implementation, you would call Stockfish for each position)
+      // For demo purposes, we'll create mock evaluations
+      const mockEvaluation = createMockEvaluation();
+      evaluations[i] = mockEvaluation;
+      
+      // Small delay to show progress
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
+    setMoveEvaluations(evaluations);
+    setIsAnalyzingGame(false);
+  };
+
+  // Create mock evaluation for demo purposes
+  const createMockEvaluation = (): MoveEvaluation => {
+    const rand = Math.random();
+    const types: ('best' | 'excellent' | 'okay' | 'inaccuracy' | 'mistake')[] = ['best', 'excellent', 'okay', 'inaccuracy', 'mistake'];
+    
+    // Add some special moves
+    if (rand < 0.05) {
+      return {
+        type: 'brilliant',
+        score: 150,
+        description: 'Brilliant move! Finds the best continuation.',
+        color: '#1e40af'
+      };
+    } else if (rand < 0.1) {
+      return {
+        type: 'blunder',
+        score: -300,
+        description: 'Blunder! Major mistake that loses material or position.',
+        color: '#991b1b'
+      };
+    }
+    
+    const type = types[Math.floor(rand * types.length)];
+    const scoreMap: Record<typeof type, number> = {
+      best: Math.random() * 50,
+      excellent: Math.random() * 100 - 25,
+      okay: Math.random() * 100 - 50,
+      inaccuracy: Math.random() * -150 - 50,
+      mistake: Math.random() * -200 - 100
+    };
+    
+    const colorMap: Record<typeof type, string> = {
+      best: '#059669',
+      excellent: '#059669',
+      okay: '#65a30d',
+      inaccuracy: '#d97706',
+      mistake: '#dc2626'
+    };
+    
+    const descriptionMap: Record<typeof type, string> = {
+      best: 'Best move in the position.',
+      excellent: 'Excellent move. Very close to the best.',
+      okay: 'Good move. Maintains a reasonable position.',
+      inaccuracy: 'Inaccuracy. Not the most precise move.',
+      mistake: 'Mistake. Gives opponent a significant advantage.'
+    };
+    
+    return {
+      type: type,
+      score: scoreMap[type],
+      description: descriptionMap[type],
+      color: colorMap[type]
+    };
   };
 
   useEffect(() => {
@@ -125,7 +226,7 @@ export default function AnalysisPage() {
         clearInterval(playIntervalRef.current);
       }
     };
-  }, []);
+  }, [chessInstance, loadPgn]);
 
   useEffect(() => {
     if (currentMove >= 0 && currentMove < history.length) {
@@ -157,6 +258,13 @@ export default function AnalysisPage() {
     };
   }, [isPlaying, history.length]);
 
+  // Analyze current position when move changes
+  useEffect(() => {
+    if (currentMove >= 0 && history[currentMove] && isReady) {
+      analyzePosition(history[currentMove].fen);
+    }
+  }, [currentMove, history, isReady, analyzePosition]);
+
   const goToStart = () => setCurrentMove(-1);
   const goToEnd = () => setCurrentMove(history.length - 1);
   const goToPrevMove = () => setCurrentMove((prev) => Math.max(-1, prev - 1));
@@ -168,11 +276,41 @@ export default function AnalysisPage() {
     setOrientation((prev) => (prev === "white" ? "black" : "white"));
 
   const getMoveItemClass = (index: number) => {
+    const evaluation = moveEvaluations[index];
+    let bgColor = "";
+    
+    if (evaluation) {
+      switch (evaluation.type) {
+        case 'brilliant':
+        case 'best':
+          bgColor = "bg-green-100 dark:bg-green-900/30";
+          break;
+        case 'excellent':
+        case 'okay':
+          bgColor = "bg-blue-100 dark:bg-blue-900/30";
+          break;
+        case 'inaccuracy':
+          bgColor = "bg-yellow-100 dark:bg-yellow-900/30";
+          break;
+        case 'mistake':
+        case 'blunder':
+          bgColor = "bg-red-100 dark:bg-red-900/30";
+          break;
+      }
+    }
+    
     return `px-2 py-1 rounded cursor-pointer ${
       currentMove === index
         ? "bg-primary text-primary-foreground"
-        : "hover:bg-accent"
+        : `hover:bg-accent ${bgColor}`
     }`;
+  };
+
+  const getCurrentMoveEvaluation = () => {
+    if (currentMove >= 0 && currentMove < moveEvaluations.length) {
+      return moveEvaluations[currentMove];
+    }
+    return null;
   };
 
   return (
@@ -310,6 +448,7 @@ export default function AnalysisPage() {
                   <TabsTrigger value="evaluation">Evaluation</TabsTrigger>
                   <TabsTrigger value="info">Game Info</TabsTrigger>
                 </TabsList>
+                
                 <TabsContent value="moves" className="flex-1">
                   <ScrollArea className="h-[70vh]">
                     <div className="p-4">
@@ -342,9 +481,20 @@ export default function AnalysisPage() {
                                   goToMove(whiteIdx)
                                 }
                               >
-                                {whiteIdx < history.length
-                                  ? history[whiteIdx].san
-                                  : ""}
+                                {whiteIdx < history.length ? (
+                                  <div className="flex items-center gap-2">
+                                    <span>{history[whiteIdx].san}</span>
+                                    {moveEvaluations[whiteIdx] && (
+                                      <div
+                                        className="w-2 h-2 rounded-full"
+                                        style={{ 
+                                          backgroundColor: moveEvaluations[whiteIdx]?.color 
+                                        }}
+                                        title={moveEvaluations[whiteIdx]?.type}
+                                      />
+                                    )}
+                                  </div>
+                                ) : ""}
                               </div>
                               <div
                                 className={
@@ -357,33 +507,97 @@ export default function AnalysisPage() {
                                   goToMove(blackIdx)
                                 }
                               >
-                                {blackIdx < history.length
-                                  ? history[blackIdx].san
-                                  : ""}
+                                {blackIdx < history.length ? (
+                                  <div className="flex items-center gap-2">
+                                    <span>{history[blackIdx].san}</span>
+                                    {moveEvaluations[blackIdx] && (
+                                      <div
+                                        className="w-2 h-2 rounded-full"
+                                        style={{ 
+                                          backgroundColor: moveEvaluations[blackIdx]?.color 
+                                        }}
+                                        title={moveEvaluations[blackIdx]?.type}
+                                      />
+                                    )}
+                                  </div>
+                                ) : ""}
                               </div>
                             </React.Fragment>
                           );
                         })}
                       </div>
-                    </div>
-                  </ScrollArea>
-                </TabsContent>
-                <TabsContent value="evaluation" className="flex-1">
-                  <ScrollArea className="h-[70vh]">
-                    <div className="p-4 flex flex-col items-center justify-center h-full">
-                      <div className="text-center text-muted-foreground">
-                        <BarChart2 className="h-12 w-12 mx-auto mb-4" />
-                        <p>
-                          Evaluation feature will be implemented in the next
-                          phase
-                        </p>
-                        <p className="text-sm mt-2">
-                          This will show engine analysis of the current position
-                        </p>
+                      
+                      {/* Analyze Game Button */}
+                      <div className="mt-4">
+                        <Button 
+                          onClick={analyzeGame}
+                          disabled={!isReady || isAnalyzingGame || history.length === 0}
+                          className="w-full"
+                          variant="outline"
+                        >
+                          <Zap className="w-4 h-4 mr-2" />
+                          {isAnalyzingGame ? `Analyzing... ${Math.round(analysisProgress)}%` : 'Analyze Game'}
+                        </Button>
+                        
+                        {stockfishError && (
+                          <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/30 rounded text-red-600 text-xs">
+                            <AlertCircle className="w-3 h-3 inline mr-1" />
+                            {stockfishError}
+                          </div>
+                        )}
+                        
+                        {!isReady && (
+                          <div className="mt-2 text-xs text-muted-foreground text-center">
+                            Loading Stockfish engine...
+                          </div>
+                        )}
                       </div>
                     </div>
                   </ScrollArea>
                 </TabsContent>
+                
+                <TabsContent value="evaluation" className="flex-1">
+                  <ScrollArea className="h-[70vh]">
+                    <div className="p-4 space-y-4">
+                      {/* Current Move Analysis */}
+                      {getCurrentMoveEvaluation() && currentMove >= 0 ? (
+                        <MoveAnalysis
+                          evaluation={getCurrentMoveEvaluation()!}
+                          analysis={currentAnalysis || undefined}
+                          isAnalyzing={isAnalyzing}
+                          moveNumber={history[currentMove]?.moveNumber}
+                          san={history[currentMove]?.san}
+                          isWhite={history[currentMove]?.move.color === 'w'}
+                        />
+                      ) : (
+                        <Card>
+                          <CardContent className="p-6 flex flex-col items-center justify-center text-center">
+                            <BarChart2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                            <p className="text-muted-foreground">
+                              {moveEvaluations.some(e => e !== null) 
+                                ? "Select a move to see its evaluation"
+                                : "Click 'Analyze Game' to evaluate all moves"
+                              }
+                            </p>
+                          </CardContent>
+                        </Card>
+                      )}
+                      
+                      {/* Game Evaluation Chart */}
+                      {moveEvaluations.some(e => e !== null) && (
+                        <>
+                          <GameEvaluationChart
+                            evaluations={moveEvaluations}
+                            currentMove={currentMove}
+                            onMoveClick={goToMove}
+                          />
+                          <MoveEvaluationLegend />
+                        </>
+                      )}
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+                
                 <TabsContent value="info" className="flex-1">
                   <ScrollArea className="h-[70vh]">
                     <div className="p-4">
