@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { loadStockfish, StockfishEngine } from '@/lib/stockfish/load-engine';
 
 export interface AnalysisResult {
   depth: number;
@@ -19,7 +20,7 @@ export interface MoveEvaluation {
 }
 
 export const useStockfish = () => {
-  const workerRef = useRef<Worker | null>(null);
+  const engineRef = useRef<StockfishEngine | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [currentAnalysis, setCurrentAnalysis] = useState<AnalysisResult | null>(null);
@@ -27,21 +28,15 @@ export const useStockfish = () => {
 
   const handleStockfishMessage = useCallback((message: string) => {
     if (message.includes('uciok')) {
-      // Send isready after uci
-      workerRef.current?.postMessage({
-        type: 'command',
-        command: 'isready'
-      });
+      engineRef.current?.send('isready');
     } else if (message.includes('readyok')) {
       setIsReady(true);
     } else if (message.startsWith('info')) {
-      // Parse analysis info
       const analysis = parseAnalysisInfo(message);
       if (analysis) {
         setCurrentAnalysis(analysis);
       }
     } else if (message.startsWith('bestmove')) {
-      // Analysis complete
       setIsAnalyzing(false);
       const bestMove = message.split(' ')[1];
       setCurrentAnalysis(prev => prev ? { ...prev, bestMove } : null);
@@ -49,50 +44,46 @@ export const useStockfish = () => {
   }, []);
 
   useEffect(() => {
-    // Initialize worker
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    let cancelled = false;
+
     try {
-      workerRef.current = new Worker('/stockfish.worker.js');
-      
-      workerRef.current.onmessage = (e) => {
-        const { type, data, error } = e.data;
-        
-        switch (type) {
-          case 'ready':
-            setIsReady(true);
-            setError(null);
-            // Send UCI initialization
-            workerRef.current?.postMessage({
-              type: 'command',
-              command: 'uci'
-            });
-            break;
-            
-          case 'message':
-            handleStockfishMessage(data);
-            break;
-            
-          case 'error':
-            setError(error);
-            setIsAnalyzing(false);
-            break;
+      const engine = loadStockfish();
+      engineRef.current = engine;
+
+      engine.stream = (line: string) => {
+        if (!cancelled) {
+          handleStockfishMessage(line);
         }
       };
-      
-      workerRef.current.onerror = (error) => {
-        setError('Worker error: ' + error.message);
+
+      engine.onError = (errorEvent) => {
+        if (cancelled) return;
+        const message =
+          errorEvent instanceof ErrorEvent
+            ? errorEvent.message
+            : (errorEvent as Error)?.message || 'Worker error occurred';
+        setError('Worker error: ' + message);
         setIsAnalyzing(false);
       };
-      
-      // Initialize Stockfish
-      workerRef.current.postMessage({ type: 'init' });
-      
+
+      setError(null);
+      setIsReady(false);
+      engine.send('uci');
     } catch (error) {
-      setError('Failed to create worker: ' + (error as Error).message);
+      if (!cancelled) {
+        setError('Failed to load Stockfish: ' + (error as Error).message);
+      }
     }
 
     return () => {
-      if (workerRef.current) {
-        workerRef.current.terminate();
+      cancelled = true;
+      if (engineRef.current) {
+        engineRef.current.quit();
+        engineRef.current = null;
       }
     };
   }, [handleStockfishMessage]);
@@ -138,7 +129,7 @@ export const useStockfish = () => {
   };
 
   const analyzePosition = useCallback((fen: string, depth: number = 15) => {
-    if (!workerRef.current || !isReady) {
+    if (!engineRef.current || !isReady) {
       setError('Stockfish not ready');
       return;
     }
@@ -147,15 +138,14 @@ export const useStockfish = () => {
     setError(null);
     setCurrentAnalysis(null);
     
-    workerRef.current.postMessage({
-      type: 'analyze',
-      payload: { fen, depth }
-    });
+    engineRef.current.send(`position fen ${fen}`);
+    engineRef.current.send(`go depth ${depth}`);
   }, [isReady]);
 
   const stopAnalysis = useCallback(() => {
-    if (workerRef.current && isAnalyzing) {
-      workerRef.current.postMessage({ type: 'stop' });
+    if (engineRef.current && isAnalyzing) {
+      engineRef.current.stopMoves();
+      engineRef.current.send('stop');
       setIsAnalyzing(false);
     }
   }, [isAnalyzing]);
@@ -166,7 +156,6 @@ export const useStockfish = () => {
     isWhite: boolean,
     bestMoveScore: number
   ): MoveEvaluation => {
-    // Adjust scores based on perspective (white = positive, black = negative)
     const adjustedBefore = isWhite ? beforeScore : -beforeScore;
     const adjustedAfter = isWhite ? afterScore : -afterScore;
     const adjustedBest = isWhite ? bestMoveScore : -bestMoveScore;
@@ -174,7 +163,6 @@ export const useStockfish = () => {
     const scoreDiff = adjustedAfter - adjustedBefore;
     const lossFromBest = adjustedBest - adjustedAfter;
 
-    // Thresholds for move classification (in centipawns)
     if (lossFromBest <= 10) {
       if (scoreDiff >= 100) {
         return {
@@ -219,7 +207,6 @@ export const useStockfish = () => {
         color: '#dc2626'
       };
     } else {
-      // Check for critical moves (forced/tactical)
       if (Math.abs(adjustedBefore) > 300 || Math.abs(adjustedAfter) > 300) {
         return {
           type: 'critical',

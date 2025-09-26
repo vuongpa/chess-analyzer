@@ -34,8 +34,47 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // Apply SharedArrayBuffer headers to all pages
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Cross-Origin-Embedder-Policy',
+            value: 'require-corp',
+          },
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
+          },
+        ],
+      },
+      {
         source: '/stockfish/(.*)',
         headers: [
+          {
+            key: 'Cross-Origin-Embedder-Policy',
+            value: 'require-corp',
+          },
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
+          },
+          {
+            key: 'Cross-Origin-Resource-Policy',
+            value: 'cross-origin',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/(.*)\\.wasm$',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/wasm',
+          },
           {
             key: 'Cross-Origin-Embedder-Policy',
             value: 'require-corp',
@@ -51,12 +90,29 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/(.*)\\.wasm$',
+        source: '/(.*)\\.js$',
         headers: [
           {
             key: 'Content-Type',
-            value: 'application/wasm',
+            value: 'application/javascript',
           },
+          {
+            key: 'Cross-Origin-Embedder-Policy',
+            value: 'require-corp',
+          },
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
+          },
+          {
+            key: 'Cross-Origin-Resource-Policy',
+            value: 'cross-origin',
+          },
+        ],
+      },
+      {
+        source: '/(.*)\\.worker\\.js$',
+        headers: [
           {
             key: 'Cross-Origin-Embedder-Policy',
             value: 'require-corp',
