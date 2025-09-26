@@ -3,7 +3,7 @@ import store from 'store2';
 const local = store.local;
 
 const defaultTheme = {
-  board: 'brown',
+  board: 'green',
   pieces: 'neo',
   coordinates: true,
   highlight: true,

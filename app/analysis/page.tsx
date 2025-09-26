@@ -9,7 +9,6 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MoveAnalysis } from "@/components/move-analysis";
 import { GameEvaluationChart } from "@/components/game-evaluation-chart";
-import { MoveEvaluationLegend } from "@/components/move-evaluation-legend";
 import { useStockfish, MoveEvaluation } from "@/hooks/use-stockfish";
 import { Chess } from "chess.js";
 import {
@@ -24,7 +23,7 @@ import {
   Zap,
   AlertCircle,
 } from "lucide-react";
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
 interface MoveHistory {
   san: string;
@@ -314,12 +313,22 @@ export default function AnalysisPage() {
     }`;
   };
 
-  const getCurrentMoveEvaluation = () => {
+  const currentEvaluation = useMemo(() => {
     if (currentMove >= 0 && currentMove < moveEvaluations.length) {
       return moveEvaluations[currentMove];
     }
     return null;
-  };
+  }, [currentMove, moveEvaluations]);
+
+  const hasAnyEvaluation = useMemo(
+    () => moveEvaluations.some((evaluation) => evaluation !== null),
+    [moveEvaluations]
+  );
+
+  const shouldShowAnalysis =
+    currentMove >= 0 &&
+    currentMove < history.length &&
+    (currentEvaluation || isAnalyzing || currentAnalysis);
 
   return (
     <DefaultLayout>
@@ -457,7 +466,7 @@ export default function AnalysisPage() {
             </div>
           </div>
 
-          <div className="lg:col-span-1 text-xs">
+          <div className="lg:col-span-2">
             <Tabs defaultValue="moves" className="h-full flex flex-col">
               <TabsList className="grid grid-cols-3">
                 <TabsTrigger value="moves">Moves</TabsTrigger>
@@ -560,7 +569,6 @@ export default function AnalysisPage() {
                         disabled={
                           !isReady || isAnalyzingGame || history.length === 0
                         }
-                        className="w-full"
                         variant="default"
                         size={"lg"}
                       >
@@ -584,9 +592,9 @@ export default function AnalysisPage() {
                       )}
                     </div>
                     {/* Current Move Analysis */}
-                    {getCurrentMoveEvaluation() && currentMove >= 0 ? (
+                    {shouldShowAnalysis ? (
                       <MoveAnalysis
-                        evaluation={getCurrentMoveEvaluation()!}
+                        evaluation={currentEvaluation ?? undefined}
                         analysis={currentAnalysis || undefined}
                         isAnalyzing={isAnalyzing}
                         moveNumber={history[currentMove]?.moveNumber}
@@ -598,7 +606,7 @@ export default function AnalysisPage() {
                         <CardContent className="p-6 flex flex-col items-center justify-center text-center">
                           <BarChart2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                           <p className="text-muted-foreground">
-                            {moveEvaluations.some((e) => e !== null)
+                            {hasAnyEvaluation
                               ? "Select a move to see its evaluation"
                               : "Click 'Analyze Game' to evaluate all moves"}
                           </p>
@@ -657,8 +665,6 @@ export default function AnalysisPage() {
               </TabsContent>
             </Tabs>
           </div>
-
-          <div className="hidden lg:block lg:col-span-1" aria-hidden="true" />
         </div>
       </div>
     </DefaultLayout>

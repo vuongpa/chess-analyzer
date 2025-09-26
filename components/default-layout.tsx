@@ -8,7 +8,7 @@ interface DefaultLayoutProps {
 
 export function DefaultLayout({ children }: DefaultLayoutProps) {
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className="relative min-h-screen flex flex-col text-sm">
       <Header />
       {children}
     </div>
