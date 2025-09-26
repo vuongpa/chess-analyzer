@@ -51,7 +51,6 @@ export default function AnalysisPage() {
   const playIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [orientation, setOrientation] = useState<"white" | "black">("white");
 
-  // Stockfish integration
   const {
     isReady,
     isAnalyzing,
@@ -71,7 +70,6 @@ export default function AnalysisPage() {
       try {
         chessInstance.loadPgn(pgnContent);
         setPgn(pgnContent);
-
         const moves = [];
         const tempChess = new Chess();
 
@@ -94,9 +92,7 @@ export default function AnalysisPage() {
 
         setHistory(moves);
         setFen(tempChess.fen());
-        setCurrentMove(moves.length - 1);
         setMoveEvaluations(new Array(moves.length).fill(null));
-
         setOrientation(tempChess.turn() === "w" ? "black" : "white");
       } catch (error) {
         console.error("Error loading PGN:", error);
@@ -105,7 +101,6 @@ export default function AnalysisPage() {
     [chessInstance]
   );
 
-  // Analyze entire game
   const analyzeGame = async () => {
     if (!isReady || history.length === 0) return;
 
@@ -116,16 +111,12 @@ export default function AnalysisPage() {
       history.length
     ).fill(null);
 
-    // Get position evaluations for each move
     for (let i = 0; i < history.length; i++) {
       setAnalysisProgress(((i + 1) / history.length) * 100);
 
-      // Simulate analysis (in a real implementation, you would call Stockfish for each position)
-      // For demo purposes, we'll create mock evaluations
       const mockEvaluation = createMockEvaluation();
       evaluations[i] = mockEvaluation;
 
-      // Small delay to show progress
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
@@ -133,13 +124,11 @@ export default function AnalysisPage() {
     setIsAnalyzingGame(false);
   };
 
-  // Create mock evaluation for demo purposes
   const createMockEvaluation = (): MoveEvaluation => {
     const rand = Math.random();
     const types: ("best" | "excellent" | "okay" | "inaccuracy" | "mistake")[] =
       ["best", "excellent", "okay", "inaccuracy", "mistake"];
 
-    // Add some special moves
     if (rand < 0.05) {
       return {
         type: "brilliant",
@@ -265,7 +254,6 @@ export default function AnalysisPage() {
     };
   }, [isPlaying, history.length]);
 
-  // Analyze current position when move changes
   useEffect(() => {
     if (currentMove >= 0 && history[currentMove] && isReady) {
       analyzePosition(history[currentMove].fen);
@@ -343,51 +331,6 @@ export default function AnalysisPage() {
                 maxWidth: "min(100%, 80vh, 720px)",
               }}
             >
-              {/* Board coordinates */}
-              <div className="absolute top-0 bottom-0 left-0 z-10 flex flex-col justify-around pointer-events-none">
-                {orientation === "white"
-                  ? ["8", "7", "6", "5", "4", "3", "2", "1"].map((num) => (
-                      <div
-                        key={num}
-                        className="text-xs opacity-70 w-4 text-center"
-                      >
-                        {num}
-                      </div>
-                    ))
-                  : ["1", "2", "3", "4", "5", "6", "7", "8"].map((num) => (
-                      <div
-                        key={num}
-                        className="text-xs opacity-70 w-4 text-center"
-                      >
-                        {num}
-                      </div>
-                    ))}
-              </div>
-              {orientation === "white" && (
-                <div className="absolute left-0 right-0 bottom-0 z-10 flex justify-around pointer-events-none">
-                  {["a", "b", "c", "d", "e", "f", "g", "h"].map((letter) => (
-                    <div
-                      key={letter}
-                      className="text-xs opacity-70 h-4 text-center"
-                    >
-                      {letter}
-                    </div>
-                  ))}
-                </div>
-              )}
-              {orientation === "black" && (
-                <div className="absolute left-0 right-0 top-0 z-10 flex justify-around pointer-events-none">
-                  {["h", "g", "f", "e", "d", "c", "b", "a"].map((letter) => (
-                    <div
-                      key={letter}
-                      className="text-xs opacity-70 h-4 text-center"
-                    >
-                      {letter}
-                    </div>
-                  ))}
-                </div>
-              )}
-
               <div className="h-full w-full z-99 overflow-hidden rounded-md">
                 <NextChessboard
                   fen={fen}
