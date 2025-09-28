@@ -577,7 +577,6 @@ export default function AnalysisPage() {
                   }
                   bestMoveArrow={bestMoveArrow}
                   onFenChange={(newFen) => {
-                    console.log("FEN updated:", newFen);
                   }}
                   readOnly={false}
                   viewOnly={true}

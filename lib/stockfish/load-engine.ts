@@ -114,10 +114,6 @@ export function loadStockfish(options: LoadStockfishOptions = {}): StockfishEngi
       return;
     }
 
-    if (debugging) {
-      console.log('stockfish:out', line);
-    }
-
     engine.stream?.(line);
 
     if (!queue.length || shouldIgnoreLine(line)) {
@@ -191,10 +187,6 @@ export function loadStockfish(options: LoadStockfishOptions = {}): StockfishEngi
     const trimmed = String(command).trim();
     if (!trimmed) {
       return;
-    }
-
-    if (debugging) {
-      console.log('stockfish:in', trimmed);
     }
 
     let noReply = false;

@@ -87,7 +87,6 @@ const Chessboard = forwardRef<ChessboardRef, ChessboardComponentProps>((props, r
   };
 
   const handleSquareClick = (square: Key) => {
-    console.log('handleSquareClick', square);
     const piece = chess.get(square as Square);
     const dests = toDests(chess);
     if (piece && dests.has(square)) {
@@ -156,8 +155,6 @@ const Chessboard = forwardRef<ChessboardRef, ChessboardComponentProps>((props, r
   useEffect(() => {
     setSelectedSquare(null);
   }, [fen]);
-  console.log('showEvaluationOnSquare',props.showEvaluationOnSquare)
-  console.log('moveEvaluation',props.moveEvaluation)
 
   return (
     <Theme>
