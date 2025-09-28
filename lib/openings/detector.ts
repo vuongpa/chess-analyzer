@@ -1,4 +1,5 @@
-import { OPENING_LINES, OpeningLine } from "./database";
+import type { OpeningLine } from "./database.types";
+import { OPENING_LINES } from "./database";
 
 export interface OpeningMatch {
   opening: OpeningLine;
