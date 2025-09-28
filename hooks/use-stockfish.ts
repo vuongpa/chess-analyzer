@@ -24,7 +24,7 @@ export interface MoveEvaluation {
     | 'inaccuracy'
     | 'mistake'
     | 'blunder'
-    | 'missed_win'
+    | 'miss'
     | 'theory';
   score: number;
   description: string;
@@ -55,7 +55,7 @@ const MOVE_TYPE_COLORS: Record<MoveEvaluation['type'], string> = {
   inaccuracy: '#d97706',
   mistake: '#dc2626',
   blunder: '#991b1b',
-  missed_win: '#7c3aed',
+  miss: '#7c3aed',
   theory: '#6366f1'
 };
 
@@ -223,43 +223,52 @@ export const useStockfish = () => {
     const winBestPct = winBest * 100;
     const winChangePct = winChange * 100;
     const lossVsBestPct = lossVsBest * 100;
+    const bestGainPct = bestGain * 100;
 
-    const turnedAround = winBefore <= 0.35 && winAfter >= 0.55;
-    const comebackSwing = winBefore <= 0.25 && winAfter >= 0.6;
-    const longTermLift = winChange >= 0.22 || bestGain >= 0.28;
-    const decisiveSwing = winChange >= 0.30 || bestGain >= 0.35 || comebackSwing;
     const isOnlyMove = lossVsBest <= 0.002;
-    const quietFinish = Math.abs(scoreDiff) <= 50;
-    const sacrificeIndicator = scoreDiff < 0 || quietFinish;
-    const brilliantCandidate =
-      isOnlyMove &&
-      decisiveSwing &&
-      (sacrificeIndicator || winChange >= 0.35);
+    const losingToEqual = winBefore <= 0.3 && winAfter >= 0.45;
+    const equalToWinning = winBefore >= 0.35 && winBefore <= 0.65 && winAfter >= 0.75;
+    const swingSavesGame = bestGain >= 0.18 && winAfter >= 0.6;
     const greatCandidate =
-      (isOnlyMove && (winChange >= 0.15 || bestGain >= 0.2)) ||
-      (lossVsBest <= 0.01 && (turnedAround || longTermLift));
-    const missedWin = winBest >= 0.9 && winAfter <= 0.7 && lossVsBest >= 0.15;
+      lossVsBest <= 0.02 &&
+      (isOnlyMove || losingToEqual || equalToWinning || swingSavesGame || winChange >= 0.12);
 
-    let type: MoveEvaluation['type'];
+    const sacrificeDrop = scoreDiff <= -150;
+    const keepsPositionPlayable = winAfter >= 0.4;
+    const notCrushingBefore = winBefore <= 0.85;
+    const notLosingAfter = winAfter >= 0.35;
+    const brilliantCandidate =
+      lossVsBest <= 0.05 &&
+      sacrificeDrop &&
+      keepsPositionPlayable &&
+      notCrushingBefore &&
+      notLosingAfter;
 
-    if (missedWin) {
-      type = 'missed_win';
+    const missCandidate = winBest >= 0.75 && winAfter <= 0.65 && lossVsBest >= 0.1;
+
+    let baseType: MoveEvaluation['type'];
+    if (lossVsBest <= 0.0005) {
+      baseType = 'best';
+    } else if (lossVsBest <= 0.02) {
+      baseType = 'excellent';
+    } else if (lossVsBest <= 0.05) {
+      baseType = 'good';
+    } else if (lossVsBest <= 0.1) {
+      baseType = 'inaccuracy';
+    } else if (lossVsBest <= 0.2) {
+      baseType = 'mistake';
+    } else {
+      baseType = 'blunder';
+    }
+
+    let type: MoveEvaluation['type'] = baseType;
+
+    if (missCandidate) {
+      type = 'miss';
     } else if (brilliantCandidate) {
       type = 'brilliant';
-    } else if (lossVsBest <= 0.003) {
-      type = isOnlyMove && (winChange >= 0.12 || bestGain >= 0.16) ? 'great' : 'best';
     } else if (greatCandidate) {
       type = 'great';
-    } else if (lossVsBest <= 0.01) {
-      type = 'excellent';
-    } else if (lossVsBest <= 0.03) {
-      type = 'good';
-    } else if (lossVsBest <= 0.08) {
-      type = 'inaccuracy';
-    } else if (lossVsBest <= 0.18) {
-      type = 'mistake';
-    } else {
-      type = 'blunder';
     }
 
     const color = MOVE_TYPE_COLORS[type] ?? '#64748b';
@@ -269,33 +278,35 @@ export const useStockfish = () => {
     const description = (() => {
       switch (type) {
         case 'brilliant': {
-          const swingText = formatPct(Math.abs(winChangePct));
-          return `Brilliant! Only move in the position, a quiet/sacrificial idea that lifts win odds by ${swingText}.`;
+          const swingText = formatSignedPct(winChangePct);
+          return `Brilliant sacrifice. Expected points climb to ${formatPct(winAfterPct)} (${swingText}) while the move stays near-engine perfect (${formatPct(lossVsBestPct)} loss).`;
         }
         case 'great': {
           const liftText = formatSignedPct(winChangePct);
-          return `Great move. Keeps near-perfect play with ${formatPct(lossVsBestPct)} loss and shifts your outlook ${liftText}.`;
+          const onlyMoveText = isOnlyMove ? ' Found the only playable option.' : '';
+          return `Great move. Critical resource${onlyMoveText}—it costs ${formatPct(lossVsBestPct)} but shifts the game ${liftText}.`;
         }
         case 'best': {
-          return `Best move. Expected score remains ${formatPct(winAfterPct)}.`;
+          return `Best move. Expected points hold at ${formatPct(winAfterPct)} with no loss.`;
         }
         case 'excellent': {
-          return `Excellent. Within ${formatPct(lossVsBestPct)} of optimal—precise but not the sole winning route.`;
+          return `Excellent. Loses under 2% expected points (${formatPct(lossVsBestPct)}).`;
         }
         case 'good': {
-          return `Solid choice. Drops ${formatPct(lossVsBestPct)} of the expected score.`;
+          return `Good. Drops ${formatPct(lossVsBestPct)} expected points (within the 2–5% window).`;
         }
         case 'inaccuracy': {
-          return `Inaccuracy. Gives back ${formatPct(lossVsBestPct)} of the expected result.`;
+          return `Inaccuracy. Gives back ${formatPct(lossVsBestPct)} of the expected result (5–10% range).`;
         }
         case 'mistake': {
-          return `Mistake. Expected score falls by ${formatPct(lossVsBestPct)} compared to best.`;
+          return `Mistake. Loses ${formatPct(lossVsBestPct)} expected points (10–20%).`;
         }
         case 'blunder': {
-          return `Blunder! Expected score collapses by ${formatPct(lossVsBestPct)}.`;
+          return `Blunder! Expected points collapse by ${formatPct(lossVsBestPct)}.`;
         }
-        case 'missed_win': {
-          return `Missed win. Best line promised ${formatPct(winBestPct)} but this move leaves only ${formatPct(winAfterPct)}.`;
+        case 'miss': {
+          const missedSwing = formatPct(bestGainPct);
+          return `Miss. Engine found a path to ${formatPct(winBestPct)} expected points, but this move settles for ${formatPct(winAfterPct)} (${missedSwing} left on the table).`;
         }
         default:
           return 'Move evaluation unavailable.';

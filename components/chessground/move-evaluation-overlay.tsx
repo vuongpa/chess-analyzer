@@ -25,14 +25,14 @@ const MoveEvaluationOverlay: React.FC<MoveEvaluationOverlayProps> = ({ evaluatio
 
   const iconMap: Record<MoveEvaluation['type'], string> = {
     brilliant: '/assets/icon/brilliant.svg',
-    great: '/assets/icon/excellent.svg',
+    great: '/assets/icon/great.svg',
     best: '/assets/icon/best.svg',
     excellent: '/assets/icon/excellent.svg',
-    good: '/assets/icon/okay.svg',
+    good: '/assets/icon/good.svg',
     inaccuracy: '/assets/icon/inaccuracy.svg',
     mistake: '/assets/icon/mistake.svg',
     blunder: '/assets/icon/blunder.svg',
-    missed_win: '/assets/icon/critical.svg',
+    miss: '/assets/icon/critical.svg',
     theory: '/assets/icon/theory.svg'
   };
 

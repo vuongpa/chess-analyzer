@@ -197,7 +197,7 @@ export default function AnalysisPage() {
       inaccuracy: "#d97706",
       mistake: "#dc2626",
       blunder: "#991b1b",
-      missed_win: "#7c3aed",
+  miss: "#7c3aed",
       theory: "#6366f1",
     };
 
@@ -252,13 +252,13 @@ export default function AnalysisPage() {
     }
 
     if (rand < 0.12) {
-      return makeEvaluation("missed_win", {
-        score: -140,
-        description: "Missed the knockout blow when a win was available.",
-        winBefore: 0.88,
-        winAfter: 0.68,
-        winBest: 0.96,
-        centipawnLoss: 260,
+      return makeEvaluation("miss", {
+        score: -110,
+        description: "Miss. A winning conversion was available but slipped away.",
+        winBefore: 0.74,
+        winAfter: 0.58,
+        winBest: 0.88,
+        centipawnLoss: 180,
       });
     }
 
@@ -290,32 +290,32 @@ export default function AnalysisPage() {
       {
         type: "best",
         winBeforeRange: [0.45, 0.60],
-        winDeltaRange: [0, 0.05],
-        lossRange: [0, 0.005],
-        scoreRange: [40, 140],
+        winDeltaRange: [-0.01, 0.03],
+        lossRange: [0, 0.0005],
+        scoreRange: [20, 120],
         description: "Best move in the position.",
       },
       {
         type: "great",
-        winBeforeRange: [0.35, 0.60],
-        winDeltaRange: [0.04, 0.12],
-        lossRange: [0.002, 0.02],
-        scoreRange: [30, 120],
-        description: "Great practical choice that keeps the initiative.",
+        winBeforeRange: [0.30, 0.60],
+        winDeltaRange: [0.05, 0.18],
+        lossRange: [0.0005, 0.02],
+        scoreRange: [15, 100],
+        description: "Great move. Critical resource that turns the tide.",
       },
       {
         type: "excellent",
         winBeforeRange: [0.35, 0.65],
-        winDeltaRange: [0.01, 0.08],
-        lossRange: [0.02, 0.05],
-        scoreRange: [0, 80],
+        winDeltaRange: [0, 0.06],
+        lossRange: [0.002, 0.018],
+        scoreRange: [-10, 60],
         description: "Excellent move. Very close to optimal play.",
       },
       {
         type: "good",
         winBeforeRange: [0.35, 0.65],
         winDeltaRange: [-0.02, 0.04],
-        lossRange: [0.05, 0.10],
+        lossRange: [0.02, 0.05],
         scoreRange: [-40, 40],
         description: "Good move. Keeps the position playable.",
       },
@@ -323,7 +323,7 @@ export default function AnalysisPage() {
         type: "inaccuracy",
         winBeforeRange: [0.35, 0.65],
         winDeltaRange: [-0.10, -0.02],
-        lossRange: [0.10, 0.20],
+        lossRange: [0.05, 0.10],
         scoreRange: [-140, -40],
         description: "Inaccuracy. Hands the opponent chances.",
       },
@@ -331,8 +331,8 @@ export default function AnalysisPage() {
         type: "mistake",
         winBeforeRange: [0.35, 0.65],
         winDeltaRange: [-0.20, -0.10],
-        lossRange: [0.20, 0.35],
-        scoreRange: [-240, -120],
+        lossRange: [0.10, 0.20],
+        scoreRange: [-220, -100],
         description: "Mistake. Serious drop in the evaluation.",
       },
     ];
@@ -475,7 +475,7 @@ export default function AnalysisPage() {
           bgColor = "bg-blue-100 dark:bg-blue-900/30";
           break;
         case "inaccuracy":
-        case "missed_win":
+        case "miss":
           bgColor = "bg-yellow-100 dark:bg-yellow-900/30";
           break;
         case "mistake":

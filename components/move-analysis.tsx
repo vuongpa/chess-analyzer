@@ -55,7 +55,7 @@ export const MoveAnalysis: React.FC<MoveAnalysisProps> = ({
         return <XCircle className="w-4 h-4" />;
       case 'blunder':
         return <XCircle className="w-4 h-4" />;
-      case 'missed_win':
+      case 'miss':
         return <AlertTriangle className="w-4 h-4" />;
       case 'theory':
         return <BookOpen className="w-4 h-4" />;
@@ -74,7 +74,7 @@ export const MoveAnalysis: React.FC<MoveAnalysisProps> = ({
       inaccuracy: 'Inaccuracy',
       mistake: 'Mistake',
       blunder: 'Blunder',
-      missed_win: 'Missed Win',
+  miss: 'Miss',
       theory: 'Theory'
     };
 

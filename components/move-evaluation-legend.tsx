@@ -30,63 +30,63 @@ export const MoveEvaluationLegend: React.FC = () => {
       color: '#1e3a8a',
       icon: <Zap className="w-3 h-3" />,
       label: 'Brilliant',
-      description: 'Only winning move with a quiet/sacrificial idea that surges win odds by ~30%+'
-    },
-    {
-      type: 'best',
-      color: '#059669',
-      icon: <CheckCircle className="w-3 h-3" />,
-      label: 'Best Move',
-  description: 'Matches the engine recommendation (≤0.3% expected score loss)'
+      description: 'Sacrificial but sound. Keeps a strong evaluation while giving up material.'
     },
     {
       type: 'great',
       color: '#0f766e',
       icon: <Sparkles className="w-3 h-3" />,
       label: 'Great Move',
-  description: 'Powerful alternative (often the only resource, big win-chance lift)'
+      description: 'Only move or tide-turning resource; costs ≤2% expected points.'
+    },
+    {
+      type: 'best',
+      color: '#059669',
+      icon: <CheckCircle className="w-3 h-3" />,
+      label: 'Best Move',
+      description: 'Zero expected-point loss—matches the engine exactly.'
     },
     {
       type: 'excellent',
       color: '#14b8a6',
       icon: <Target className="w-3 h-3" />,
       label: 'Excellent',
-  description: 'Minor slip (0.3–1% expected score loss)'
+      description: 'Within 0–2% of optimal expected points.'
     },
     {
       type: 'good',
       color: '#65a30d',
       icon: <ThumbsUp className="w-3 h-3" />,
       label: 'Good',
-  description: 'Playable choice (1–3% expected loss)'
+      description: 'Within 2–5% of optimal expected points.'
     },
     {
-      type: 'missed_win',
+      type: 'miss',
       color: '#7c3aed',
       icon: <AlertTriangle className="w-3 h-3" />,
-      label: 'Missed Win',
-      description: 'Best move secured a winning advantage; this line drops at least 15%'
+      label: 'Miss',
+      description: 'Failed to convert an opponent mistake—leaves large winning chances unused.'
     },
     {
       type: 'inaccuracy',
       color: '#d97706',
       icon: <TrendingDown className="w-3 h-3" />,
       label: 'Inaccuracy',
-  description: 'Noticeable drop (3–8% expected loss)'
+      description: 'Costs roughly 5–10% expected points.'
     },
     {
       type: 'mistake',
       color: '#dc2626',
       icon: <XCircle className="w-3 h-3" />,
       label: 'Mistake',
-  description: 'Serious error (8–18% expected loss)'
+      description: 'Drops 10–20% of your expected result.'
     },
     {
       type: 'blunder',
       color: '#991b1b',
       icon: <XCircle className="w-3 h-3" />,
       label: 'Blunder',
-      description: 'Catastrophic mistake (≥35% expected loss)'
+      description: 'Catastrophic mistake (20%+ expected-point collapse).'
     },
     {
       type: 'theory',

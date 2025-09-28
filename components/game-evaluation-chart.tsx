@@ -44,7 +44,7 @@ export const GameEvaluationChart: React.FC<GameEvaluationChartProps> = ({
       inaccuracy: 0,
       mistake: 0,
       blunder: 0,
-      missed_win: 0,
+  miss: 0,
       theory: 0
     };
 
