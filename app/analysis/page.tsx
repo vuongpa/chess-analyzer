@@ -10,6 +10,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MoveAnalysis } from "@/components/move-analysis";
 import { GameEvaluationChart } from "@/components/game-evaluation-chart";
 import { useStockfish, MoveEvaluation } from "@/hooks/use-stockfish";
+import {
+  getOpeningAnnotations,
+  OpeningAnnotation,
+  OpeningMatch,
+} from "@/lib/openings";
 import { Chess } from "chess.js";
 import {
   BarChart2,
@@ -23,7 +28,13 @@ import {
   Zap,
   AlertCircle,
 } from "lucide-react";
-import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 
 interface MoveHistory {
   san: string;
@@ -64,6 +75,23 @@ export default function AnalysisPage() {
   >([]);
   const [isAnalyzingGame, setIsAnalyzingGame] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [openingAnnotations, setOpeningAnnotations] = useState<
+    OpeningAnnotation[]
+  >([]);
+
+  const createTheoryEvaluation = useCallback(
+    (match: OpeningMatch): MoveEvaluation => {
+      const { opening } = match;
+      const variation = opening.variation ? ` - ${opening.variation}` : "";
+      return {
+        type: "theory",
+        score: 0,
+        description: `Opening theory: ${opening.name}${variation} (ECO ${opening.eco})`,
+        color: "#6366f1",
+      };
+    },
+    []
+  );
 
   const loadPgn = useCallback(
     (pgnContent: string) => {
@@ -92,13 +120,22 @@ export default function AnalysisPage() {
 
         setHistory(moves);
         setFen(tempChess.fen());
-        setMoveEvaluations(new Array(moves.length).fill(null));
+
+        const annotations = getOpeningAnnotations(
+          moves.map((move) => move.san)
+        );
+        setOpeningAnnotations(annotations);
+
+        const initialEvaluations = annotations.map((annotation) =>
+          annotation.match ? createTheoryEvaluation(annotation.match) : null
+        );
+        setMoveEvaluations(initialEvaluations);
         setOrientation(tempChess.turn() === "w" ? "black" : "white");
       } catch (error) {
         console.error("Error loading PGN:", error);
       }
     },
-    [chessInstance]
+    [chessInstance, createTheoryEvaluation]
   );
 
   const analyzeGame = async () => {
@@ -111,11 +148,26 @@ export default function AnalysisPage() {
       history.length
     ).fill(null);
 
+    const annotations =
+      openingAnnotations.length === history.length
+        ? openingAnnotations
+        : getOpeningAnnotations(history.map((move) => move.san));
+
+    if (openingAnnotations.length !== history.length) {
+      setOpeningAnnotations(annotations);
+    }
+
     for (let i = 0; i < history.length; i++) {
       setAnalysisProgress(((i + 1) / history.length) * 100);
 
-      const mockEvaluation = createMockEvaluation();
-      evaluations[i] = mockEvaluation;
+      const annotation = annotations[i];
+
+      if (annotation?.match) {
+        evaluations[i] = createTheoryEvaluation(annotation.match);
+      } else {
+        const mockEvaluation = createMockEvaluation();
+        evaluations[i] = mockEvaluation;
+      }
 
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
@@ -317,6 +369,27 @@ export default function AnalysisPage() {
     currentMove >= 0 &&
     currentMove < history.length &&
     (currentEvaluation || isAnalyzing || currentAnalysis);
+
+  const detectedOpening: OpeningMatch | null = useMemo(() => {
+    let best: OpeningMatch | null = null;
+
+    openingAnnotations.forEach((annotation) => {
+      if (!annotation.match) {
+        return;
+      }
+
+      if (
+        !best ||
+        annotation.match.matchedLength > best.matchedLength ||
+        (annotation.match.matchedLength === best.matchedLength &&
+          annotation.match.opening.moves.length < best.opening.moves.length)
+      ) {
+        best = annotation.match;
+      }
+    });
+
+    return best as OpeningMatch | null;
+  }, [openingAnnotations]);
 
   const bestMoveArrow = useMemo(() => {
     if (
@@ -595,6 +668,32 @@ export default function AnalysisPage() {
               <TabsContent value="info" className="flex-1">
                 <ScrollArea className="h-[70vh]">
                   <div className="space-y-2">
+                    {detectedOpening ? (
+                      <>
+                        <div className="grid grid-cols-[100px_1fr] items-start">
+                          <div className="text-muted-foreground">Opening</div>
+                          <div>
+                            {detectedOpening.opening.name}
+                            {detectedOpening.opening.variation
+                              ? ` - ${detectedOpening.opening.variation}`
+                              : ""}
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-[100px_1fr]">
+                          <div className="text-muted-foreground">ECO</div>
+                          <div>{detectedOpening.opening.eco}</div>
+                        </div>
+                        <div className="grid grid-cols-[100px_1fr]">
+                          <div className="text-muted-foreground">Theory</div>
+                          <div>
+                            {detectedOpening.opening.moves
+                              .slice(0, detectedOpening.matchedLength)
+                              .join(" ")}
+                          </div>
+                        </div>
+                        <Separator className="my-2" />
+                      </>
+                    ) : null}
                     {/* Display file name if available */}
                     {typeof window !== "undefined" &&
                       localStorage.getItem("pgnFileName") && (
