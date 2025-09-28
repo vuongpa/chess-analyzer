@@ -37,13 +37,14 @@ export const GameEvaluationChart: React.FC<GameEvaluationChartProps> = ({
   const getMoveTypeStats = () => {
     const stats: Record<string, number> = {
       brilliant: 0,
-      critical: 0,
+      great: 0,
       best: 0,
       excellent: 0,
-      okay: 0,
+      good: 0,
       inaccuracy: 0,
       mistake: 0,
       blunder: 0,
+      missed_win: 0,
       theory: 0
     };
 
@@ -99,7 +100,7 @@ export const GameEvaluationChart: React.FC<GameEvaluationChartProps> = ({
                 }}
                 onClick={() => onMoveClick?.(index)}
                 title={evaluation 
-                  ? `Move ${Math.floor(index / 2) + 1}: ${evaluation.type} (${(evaluation.score / 100).toFixed(2)})`
+                  ? `Move ${Math.floor(index / 2) + 1}: ${evaluation.type} (${(evaluation.winProbabilityChange * 100).toFixed(1)}% Δ, ${(evaluation.expectedLoss * 100).toFixed(1)}% loss)`
                   : `Move ${Math.floor(index / 2) + 1}`
                 }
               />
@@ -136,7 +137,14 @@ export const GameEvaluationChart: React.FC<GameEvaluationChartProps> = ({
             <span>Accuracy:</span>
             <span>
               {totalMoves > 0 
-                ? (((stats.brilliant + stats.best + stats.excellent + stats.okay) / totalMoves) * 100).toFixed(1)
+                ? (((
+                    stats.brilliant +
+                    stats.great +
+                    stats.best +
+                    stats.excellent +
+                    stats.good
+                  ) /
+                    totalMoves) * 100).toFixed(1)
                 : '0'
               }%
             </span>

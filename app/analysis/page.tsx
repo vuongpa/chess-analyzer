@@ -88,6 +88,12 @@ export default function AnalysisPage() {
         score: 0,
         description: `Opening theory: ${opening.name}${variation} (ECO ${opening.eco})`,
         color: "#6366f1",
+        centipawnLoss: 0,
+        expectedLoss: 0,
+        winProbabilityBefore: 0.5,
+        winProbabilityAfter: 0.5,
+        winProbabilityBest: 0.5,
+        winProbabilityChange: 0,
       };
     },
     []
@@ -178,56 +184,186 @@ export default function AnalysisPage() {
 
   const createMockEvaluation = (): MoveEvaluation => {
     const rand = Math.random();
-    const types: ("best" | "excellent" | "okay" | "inaccuracy" | "mistake")[] =
-      ["best", "excellent", "okay", "inaccuracy", "mistake"];
+    const clamp = (value: number) => Math.max(0, Math.min(1, value));
+    const randomBetween = (min: number, max: number) =>
+      min + Math.random() * (max - min);
 
-    if (rand < 0.05) {
-      return {
-        type: "brilliant",
-        score: 150,
-        description: "Brilliant move! Finds the best continuation.",
-        color: "#1e40af",
-      };
-    } else if (rand < 0.1) {
-      return {
-        type: "blunder",
-        score: -300,
-        description: "Blunder! Major mistake that loses material or position.",
-        color: "#991b1b",
-      };
-    }
-
-    const type = types[Math.floor(rand * types.length)];
-    const scoreMap: Record<typeof type, number> = {
-      best: Math.random() * 50,
-      excellent: Math.random() * 100 - 25,
-      okay: Math.random() * 100 - 50,
-      inaccuracy: Math.random() * -150 - 50,
-      mistake: Math.random() * -200 - 100,
-    };
-
-    const colorMap: Record<typeof type, string> = {
+    const colorMap: Record<MoveEvaluation["type"], string> = {
+      brilliant: "#1e3a8a",
+      great: "#0f766e",
       best: "#059669",
-      excellent: "#059669",
-      okay: "#65a30d",
+      excellent: "#14b8a6",
+      good: "#65a30d",
       inaccuracy: "#d97706",
       mistake: "#dc2626",
+      blunder: "#991b1b",
+      missed_win: "#7c3aed",
+      theory: "#6366f1",
     };
 
-    const descriptionMap: Record<typeof type, string> = {
-      best: "Best move in the position.",
-      excellent: "Excellent move. Very close to the best.",
-      okay: "Good move. Maintains a reasonable position.",
-      inaccuracy: "Inaccuracy. Not the most precise move.",
-      mistake: "Mistake. Gives opponent a significant advantage.",
+    const makeEvaluation = (
+      type: MoveEvaluation["type"],
+      params: {
+        score: number;
+        description: string;
+        winBefore: number;
+        winAfter: number;
+        winBest?: number;
+        centipawnLoss?: number;
+        color?: string;
+      }
+    ): MoveEvaluation => {
+      const winBefore = clamp(params.winBefore);
+      const winAfter = clamp(params.winAfter);
+      const winBest = clamp(
+        params.winBest !== undefined
+          ? params.winBest
+          : Math.max(winAfter, winBefore)
+      );
+      const expectedLoss = Math.max(0, winBest - winAfter);
+      const centipawnLoss =
+        params.centipawnLoss !== undefined
+          ? params.centipawnLoss
+          : Math.round(expectedLoss * 800);
+
+      return {
+        type,
+        score: Math.round(params.score),
+        description: params.description,
+        color: params.color ?? colorMap[type],
+        centipawnLoss,
+        expectedLoss,
+        winProbabilityBefore: winBefore,
+        winProbabilityAfter: winAfter,
+        winProbabilityBest: winBest,
+        winProbabilityChange: winAfter - winBefore,
+      };
     };
 
-    return {
-      type: type,
-      score: scoreMap[type],
-      description: descriptionMap[type],
-      color: colorMap[type],
-    };
+    if (rand < 0.07) {
+      return makeEvaluation("brilliant", {
+        score: 180,
+        description: "Brilliant move! Finds the only winning continuation.",
+        winBefore: 0.32,
+        winAfter: 0.68,
+        winBest: 0.70,
+        centipawnLoss: 4,
+      });
+    }
+
+    if (rand < 0.12) {
+      return makeEvaluation("missed_win", {
+        score: -140,
+        description: "Missed the knockout blow when a win was available.",
+        winBefore: 0.88,
+        winAfter: 0.68,
+        winBest: 0.96,
+        centipawnLoss: 260,
+      });
+    }
+
+    if (rand < 0.20) {
+      return makeEvaluation("blunder", {
+        score: -320,
+        description: "Blunder! Major mistake that loses the game.",
+        winBefore: 0.55,
+        winAfter: 0.12,
+        winBest: 0.58,
+        centipawnLoss: 380,
+      });
+    }
+
+    const profiles: Array<{
+      type:
+        | "best"
+        | "great"
+        | "excellent"
+        | "good"
+        | "inaccuracy"
+        | "mistake";
+      winBeforeRange: [number, number];
+      winDeltaRange: [number, number];
+      lossRange: [number, number];
+      scoreRange: [number, number];
+      description: string;
+    }> = [
+      {
+        type: "best",
+        winBeforeRange: [0.45, 0.60],
+        winDeltaRange: [0, 0.05],
+        lossRange: [0, 0.005],
+        scoreRange: [40, 140],
+        description: "Best move in the position.",
+      },
+      {
+        type: "great",
+        winBeforeRange: [0.35, 0.60],
+        winDeltaRange: [0.04, 0.12],
+        lossRange: [0.002, 0.02],
+        scoreRange: [30, 120],
+        description: "Great practical choice that keeps the initiative.",
+      },
+      {
+        type: "excellent",
+        winBeforeRange: [0.35, 0.65],
+        winDeltaRange: [0.01, 0.08],
+        lossRange: [0.02, 0.05],
+        scoreRange: [0, 80],
+        description: "Excellent move. Very close to optimal play.",
+      },
+      {
+        type: "good",
+        winBeforeRange: [0.35, 0.65],
+        winDeltaRange: [-0.02, 0.04],
+        lossRange: [0.05, 0.10],
+        scoreRange: [-40, 40],
+        description: "Good move. Keeps the position playable.",
+      },
+      {
+        type: "inaccuracy",
+        winBeforeRange: [0.35, 0.65],
+        winDeltaRange: [-0.10, -0.02],
+        lossRange: [0.10, 0.20],
+        scoreRange: [-140, -40],
+        description: "Inaccuracy. Hands the opponent chances.",
+      },
+      {
+        type: "mistake",
+        winBeforeRange: [0.35, 0.65],
+        winDeltaRange: [-0.20, -0.10],
+        lossRange: [0.20, 0.35],
+        scoreRange: [-240, -120],
+        description: "Mistake. Serious drop in the evaluation.",
+      },
+    ];
+
+    const profile = profiles[Math.floor(Math.random() * profiles.length)];
+    const winBefore = randomBetween(
+      profile.winBeforeRange[0],
+      profile.winBeforeRange[1]
+    );
+    const winDelta = randomBetween(
+      profile.winDeltaRange[0],
+      profile.winDeltaRange[1]
+    );
+    const winAfter = clamp(winBefore + winDelta);
+    const lossTarget = randomBetween(
+      profile.lossRange[0],
+      profile.lossRange[1]
+    );
+    const winBest = clamp(winAfter + lossTarget);
+    const score = randomBetween(
+      profile.scoreRange[0],
+      profile.scoreRange[1]
+    );
+
+    return makeEvaluation(profile.type, {
+      score,
+      description: profile.description,
+      winBefore,
+      winAfter,
+      winBest,
+    });
   };
 
   useEffect(() => {
@@ -329,14 +465,17 @@ export default function AnalysisPage() {
     if (evaluation) {
       switch (evaluation.type) {
         case "brilliant":
+        case "great":
         case "best":
           bgColor = "bg-green-100 dark:bg-green-900/30";
           break;
         case "excellent":
-        case "okay":
+        case "good":
+        case "theory":
           bgColor = "bg-blue-100 dark:bg-blue-900/30";
           break;
         case "inaccuracy":
+        case "missed_win":
           bgColor = "bg-yellow-100 dark:bg-yellow-900/30";
           break;
         case "mistake":

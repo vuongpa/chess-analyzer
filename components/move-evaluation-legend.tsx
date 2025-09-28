@@ -3,6 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import type { MoveEvaluation } from "@/hooks/use-stockfish";
 import { 
   Zap, 
   AlertTriangle, 
@@ -11,63 +12,87 @@ import {
   TrendingDown,
   XCircle,
   BookOpen,
-  Brain
+  Brain,
+  Sparkles,
+  ThumbsUp
 } from "lucide-react";
 
 export const MoveEvaluationLegend: React.FC = () => {
-  const evaluationTypes = [
+  const evaluationTypes: Array<{
+    type: MoveEvaluation['type'];
+    color: string;
+    icon: React.ReactNode;
+    label: string;
+    description: string;
+  }> = [
     {
       type: 'brilliant',
-      color: '#1e40af',
+      color: '#1e3a8a',
       icon: <Zap className="w-3 h-3" />,
-      description: 'An outstanding move that finds the best continuation with deep calculation'
-    },
-    {
-      type: 'critical',
-      color: '#7c2d12',
-      icon: <AlertTriangle className="w-3 h-3" />,
-      description: 'A critical position where precision is required'
+      label: 'Brilliant',
+      description: 'Only winning move with a quiet/sacrificial idea that surges win odds by ~30%+'
     },
     {
       type: 'best',
       color: '#059669',
       icon: <CheckCircle className="w-3 h-3" />,
-      description: 'The best move in the position according to the engine'
+      label: 'Best Move',
+  description: 'Matches the engine recommendation (≤0.3% expected score loss)'
+    },
+    {
+      type: 'great',
+      color: '#0f766e',
+      icon: <Sparkles className="w-3 h-3" />,
+      label: 'Great Move',
+  description: 'Powerful alternative (often the only resource, big win-chance lift)'
     },
     {
       type: 'excellent',
-      color: '#059669',
+      color: '#14b8a6',
       icon: <Target className="w-3 h-3" />,
-      description: 'An excellent move, very close to the best option'
+      label: 'Excellent',
+  description: 'Minor slip (0.3–1% expected score loss)'
     },
     {
-      type: 'okay',
+      type: 'good',
       color: '#65a30d',
-      icon: <CheckCircle className="w-3 h-3" />,
-      description: 'A good move that maintains a reasonable position'
+      icon: <ThumbsUp className="w-3 h-3" />,
+      label: 'Good',
+  description: 'Playable choice (1–3% expected loss)'
+    },
+    {
+      type: 'missed_win',
+      color: '#7c3aed',
+      icon: <AlertTriangle className="w-3 h-3" />,
+      label: 'Missed Win',
+      description: 'Best move secured a winning advantage; this line drops at least 15%'
     },
     {
       type: 'inaccuracy',
       color: '#d97706',
       icon: <TrendingDown className="w-3 h-3" />,
-      description: 'Not the most precise move, but still playable'
+      label: 'Inaccuracy',
+  description: 'Noticeable drop (3–8% expected loss)'
     },
     {
       type: 'mistake',
       color: '#dc2626',
       icon: <XCircle className="w-3 h-3" />,
-      description: 'A significant mistake that gives the opponent an advantage'
+      label: 'Mistake',
+  description: 'Serious error (8–18% expected loss)'
     },
     {
       type: 'blunder',
       color: '#991b1b',
       icon: <XCircle className="w-3 h-3" />,
-      description: 'A major mistake that loses material or position'
+      label: 'Blunder',
+      description: 'Catastrophic mistake (≥35% expected loss)'
     },
     {
       type: 'theory',
       color: '#6366f1',
       icon: <BookOpen className="w-3 h-3" />,
+      label: 'Theory',
       description: 'A move that follows known opening or endgame theory'
     }
   ];
@@ -95,7 +120,7 @@ export const MoveEvaluationLegend: React.FC = () => {
               >
                 <span className="flex items-center gap-1">
                   {evalType.icon}
-                  {evalType.type.charAt(0).toUpperCase() + evalType.type.slice(1)}
+                  {evalType.label}
                 </span>
               </Badge>
               <span className="text-muted-foreground flex-1">
@@ -108,9 +133,9 @@ export const MoveEvaluationLegend: React.FC = () => {
         <div className="mt-4 pt-3 border-t text-xs text-muted-foreground">
           <p><strong>How it works:</strong></p>
           <p className="mt-1">
-            Each move is analyzed by Stockfish engine and compared to the best possible move. 
-            The evaluation considers the change in position value (measured in centipawns) 
-            and the strategic complexity of the position.
+            Each move is analyzed by Stockfish and converted into expected score (win probability). 
+            Labels reflect how much win chance is lost against the engine recommendation and highlight
+            special cases like finding the only move or missing a forced win.
           </p>
         </div>
       </CardContent>

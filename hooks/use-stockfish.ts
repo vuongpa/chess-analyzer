@@ -15,11 +15,49 @@ export interface AnalysisResult {
 }
 
 export interface MoveEvaluation {
-  type: 'brilliant' | 'critical' | 'best' | 'excellent' | 'okay' | 'inaccuracy' | 'mistake' | 'blunder' | 'theory';
+  type:
+    | 'brilliant'
+    | 'great'
+    | 'best'
+    | 'excellent'
+    | 'good'
+    | 'inaccuracy'
+    | 'mistake'
+    | 'blunder'
+    | 'missed_win'
+    | 'theory';
   score: number;
   description: string;
   color: string;
+  centipawnLoss: number;
+  expectedLoss: number;
+  winProbabilityBefore: number;
+  winProbabilityAfter: number;
+  winProbabilityBest: number;
+  winProbabilityChange: number;
 }
+
+const WIN_PROB_LOGISTIC_SCALE = 0.00368208;
+
+const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
+
+const cpToWinProbability = (cp: number) => {
+  const logistic = 2 / (1 + Math.exp(-WIN_PROB_LOGISTIC_SCALE * cp)) - 1;
+  return clamp01(0.5 + 0.5 * logistic);
+};
+
+const MOVE_TYPE_COLORS: Record<MoveEvaluation['type'], string> = {
+  brilliant: '#1e3a8a',
+  great: '#0f766e',
+  best: '#059669',
+  excellent: '#14b8a6',
+  good: '#65a30d',
+  inaccuracy: '#d97706',
+  mistake: '#dc2626',
+  blunder: '#991b1b',
+  missed_win: '#7c3aed',
+  theory: '#6366f1'
+};
 
 export const useStockfish = () => {
   const engineRef = useRef<StockfishEngine | null>(null);
@@ -165,73 +203,117 @@ export const useStockfish = () => {
     isWhite: boolean,
     bestMoveScore: number
   ): MoveEvaluation => {
-    const adjustedBefore = isWhite ? beforeScore : -beforeScore;
-    const adjustedAfter = isWhite ? afterScore : -afterScore;
-    const adjustedBest = isWhite ? bestMoveScore : -bestMoveScore;
-    
-    const scoreDiff = adjustedAfter - adjustedBefore;
-    const lossFromBest = adjustedBest - adjustedAfter;
+    const orient = (score: number) => (isWhite ? score : -score);
+    const adjustedBefore = orient(beforeScore);
+    const adjustedAfter = orient(afterScore);
+    const adjustedBest = orient(Number.isFinite(bestMoveScore) ? bestMoveScore : afterScore);
 
-    if (lossFromBest <= 10) {
-      if (scoreDiff >= 100) {
-        return {
-          type: 'brilliant',
-          score: scoreDiff,
-          description: 'Brilliant move! Finds the best continuation.',
-          color: '#1e40af'
-        };
-      }
-      return {
-        type: 'best',
-        score: scoreDiff,
-        description: 'Best move in the position.',
-        color: '#059669'
-      };
-    } else if (lossFromBest <= 25) {
-      return {
-        type: 'excellent',
-        score: scoreDiff,
-        description: 'Excellent move. Very close to the best.',
-        color: '#059669'
-      };
-    } else if (lossFromBest <= 50) {
-      return {
-        type: 'okay',
-        score: scoreDiff,
-        description: 'Good move. Maintains a reasonable position.',
-        color: '#65a30d'
-      };
-    } else if (lossFromBest <= 100) {
-      return {
-        type: 'inaccuracy',
-        score: scoreDiff,
-        description: 'Inaccuracy. Not the most precise move.',
-        color: '#d97706'
-      };
-    } else if (lossFromBest <= 250) {
-      return {
-        type: 'mistake',
-        score: scoreDiff,
-        description: 'Mistake. Gives opponent a significant advantage.',
-        color: '#dc2626'
-      };
+    const scoreDiff = adjustedAfter - adjustedBefore;
+    const centipawnLoss = Math.max(0, adjustedBest - adjustedAfter);
+
+    const winBefore = cpToWinProbability(adjustedBefore);
+    const winAfter = cpToWinProbability(adjustedAfter);
+    const winBest = cpToWinProbability(adjustedBest);
+
+    const winChange = winAfter - winBefore;
+    const bestGain = winBest - winBefore;
+    const lossVsBest = Math.max(0, winBest - winAfter);
+
+    const winAfterPct = winAfter * 100;
+    const winBestPct = winBest * 100;
+    const winChangePct = winChange * 100;
+    const lossVsBestPct = lossVsBest * 100;
+
+    const turnedAround = winBefore <= 0.35 && winAfter >= 0.55;
+    const comebackSwing = winBefore <= 0.25 && winAfter >= 0.6;
+    const longTermLift = winChange >= 0.22 || bestGain >= 0.28;
+    const decisiveSwing = winChange >= 0.30 || bestGain >= 0.35 || comebackSwing;
+    const isOnlyMove = lossVsBest <= 0.002;
+    const quietFinish = Math.abs(scoreDiff) <= 50;
+    const sacrificeIndicator = scoreDiff < 0 || quietFinish;
+    const brilliantCandidate =
+      isOnlyMove &&
+      decisiveSwing &&
+      (sacrificeIndicator || winChange >= 0.35);
+    const greatCandidate =
+      (isOnlyMove && (winChange >= 0.15 || bestGain >= 0.2)) ||
+      (lossVsBest <= 0.01 && (turnedAround || longTermLift));
+    const missedWin = winBest >= 0.9 && winAfter <= 0.7 && lossVsBest >= 0.15;
+
+    let type: MoveEvaluation['type'];
+
+    if (missedWin) {
+      type = 'missed_win';
+    } else if (brilliantCandidate) {
+      type = 'brilliant';
+    } else if (lossVsBest <= 0.003) {
+      type = isOnlyMove && (winChange >= 0.12 || bestGain >= 0.16) ? 'great' : 'best';
+    } else if (greatCandidate) {
+      type = 'great';
+    } else if (lossVsBest <= 0.01) {
+      type = 'excellent';
+    } else if (lossVsBest <= 0.03) {
+      type = 'good';
+    } else if (lossVsBest <= 0.08) {
+      type = 'inaccuracy';
+    } else if (lossVsBest <= 0.18) {
+      type = 'mistake';
     } else {
-      if (Math.abs(adjustedBefore) > 300 || Math.abs(adjustedAfter) > 300) {
-        return {
-          type: 'critical',
-          score: scoreDiff,
-          description: 'Critical position. Precision required.',
-          color: '#7c2d12'
-        };
-      }
-      
-      return {
-        type: 'blunder',
-        score: scoreDiff,
-        description: 'Blunder! Major mistake that loses material or position.',
-        color: '#991b1b'
-      };
+      type = 'blunder';
     }
+
+    const color = MOVE_TYPE_COLORS[type] ?? '#64748b';
+    const formatPct = (value: number) => `${value.toFixed(1)}%`;
+    const formatSignedPct = (value: number) => `${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
+
+    const description = (() => {
+      switch (type) {
+        case 'brilliant': {
+          const swingText = formatPct(Math.abs(winChangePct));
+          return `Brilliant! Only move in the position, a quiet/sacrificial idea that lifts win odds by ${swingText}.`;
+        }
+        case 'great': {
+          const liftText = formatSignedPct(winChangePct);
+          return `Great move. Keeps near-perfect play with ${formatPct(lossVsBestPct)} loss and shifts your outlook ${liftText}.`;
+        }
+        case 'best': {
+          return `Best move. Expected score remains ${formatPct(winAfterPct)}.`;
+        }
+        case 'excellent': {
+          return `Excellent. Within ${formatPct(lossVsBestPct)} of optimal—precise but not the sole winning route.`;
+        }
+        case 'good': {
+          return `Solid choice. Drops ${formatPct(lossVsBestPct)} of the expected score.`;
+        }
+        case 'inaccuracy': {
+          return `Inaccuracy. Gives back ${formatPct(lossVsBestPct)} of the expected result.`;
+        }
+        case 'mistake': {
+          return `Mistake. Expected score falls by ${formatPct(lossVsBestPct)} compared to best.`;
+        }
+        case 'blunder': {
+          return `Blunder! Expected score collapses by ${formatPct(lossVsBestPct)}.`;
+        }
+        case 'missed_win': {
+          return `Missed win. Best line promised ${formatPct(winBestPct)} but this move leaves only ${formatPct(winAfterPct)}.`;
+        }
+        default:
+          return 'Move evaluation unavailable.';
+      }
+    })();
+
+    return {
+      type,
+      score: scoreDiff,
+      centipawnLoss,
+      expectedLoss: lossVsBest,
+      winProbabilityBefore: winBefore,
+      winProbabilityAfter: winAfter,
+      winProbabilityBest: winBest,
+      winProbabilityChange: winChange,
+      description,
+      color
+    };
   }, []);
 
   return {

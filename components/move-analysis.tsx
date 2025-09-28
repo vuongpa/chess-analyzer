@@ -15,7 +15,9 @@ import {
   XCircle,
   Target,
   Brain,
-  BookOpen
+  BookOpen,
+  Sparkles,
+  ThumbsUp
 } from "lucide-react";
 
 interface MoveAnalysisProps {
@@ -39,25 +41,44 @@ export const MoveAnalysis: React.FC<MoveAnalysisProps> = ({
     switch (type) {
       case 'brilliant':
         return <Zap className="w-4 h-4" />;
-      case 'critical':
-        return <AlertTriangle className="w-4 h-4" />;
+      case 'great':
+        return <Sparkles className="w-4 h-4" />;
       case 'best':
         return <CheckCircle className="w-4 h-4" />;
       case 'excellent':
         return <Target className="w-4 h-4" />;
-      case 'okay':
-        return <CheckCircle className="w-4 h-4" />;
+      case 'good':
+        return <ThumbsUp className="w-4 h-4" />;
       case 'inaccuracy':
         return <TrendingDown className="w-4 h-4" />;
       case 'mistake':
         return <XCircle className="w-4 h-4" />;
       case 'blunder':
         return <XCircle className="w-4 h-4" />;
+      case 'missed_win':
+        return <AlertTriangle className="w-4 h-4" />;
       case 'theory':
         return <BookOpen className="w-4 h-4" />;
       default:
         return <Brain className="w-4 h-4" />;
     }
+  };
+
+  const getMoveLabel = (type: MoveEvaluation['type']) => {
+    const labelMap: Record<MoveEvaluation['type'], string> = {
+      brilliant: 'Brilliant',
+      great: 'Great Move',
+      best: 'Best Move',
+      excellent: 'Excellent',
+      good: 'Good',
+      inaccuracy: 'Inaccuracy',
+      mistake: 'Mistake',
+      blunder: 'Blunder',
+      missed_win: 'Missed Win',
+      theory: 'Theory'
+    };
+
+    return labelMap[type] ?? 'Evaluation';
   };
 
   const formatScore = (score: number, scoreType: 'cp' | 'mate') => {
@@ -83,6 +104,9 @@ export const MoveAnalysis: React.FC<MoveAnalysisProps> = ({
     const normalized = Math.max(-500, Math.min(500, score));
     return ((normalized + 500) / 1000) * 100;
   };
+
+    const formatPercent = (value: number) => `${(value * 100).toFixed(1)}%`;
+    const formatSignedPercent = (value: number) => `${value > 0 ? '+' : ''}${(value * 100).toFixed(1)}%`;
 
   if (isAnalyzing) {
     return (
@@ -129,7 +153,7 @@ export const MoveAnalysis: React.FC<MoveAnalysisProps> = ({
               className="text-xs flex items-center gap-1"
             >
               {getMoveIcon(evaluation.type)}
-              {evaluation.type.charAt(0).toUpperCase() + evaluation.type.slice(1)}
+              {getMoveLabel(evaluation.type)}
             </Badge>
           )}
         </CardTitle>
@@ -198,20 +222,61 @@ export const MoveAnalysis: React.FC<MoveAnalysisProps> = ({
         )}
         
         {/* Score Gain/Loss */}
-        {evaluation && Math.abs(evaluation.score) > 0 && (
+        {evaluation && (
           <>
             <Separator />
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Score Change:</span>
-              <div className="flex items-center gap-1">
-                {evaluation.score > 0 ? (
-                  <TrendingUp className="w-3 h-3 text-green-600" />
-                ) : (
-                  <TrendingDown className="w-3 h-3 text-red-600" />
-                )}
-                <span 
-                  className={`text-sm font-medium ${
-                    evaluation.score > 0 ? 'text-green-600' : 'text-red-600'
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Win Probability:</span>
+                <span className="font-medium">
+                  {formatPercent(evaluation.winProbabilityBefore)}
+                  {' → '}
+                  {formatPercent(evaluation.winProbabilityAfter)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Win Chance Change:</span>
+                <div className="flex items-center gap-1">
+                  {evaluation.winProbabilityChange > 0 && (
+                    <TrendingUp className="w-3 h-3 text-green-600" />
+                  )}
+                  {evaluation.winProbabilityChange < 0 && (
+                    <TrendingDown className="w-3 h-3 text-red-600" />
+                  )}
+                  <span
+                    className={`font-medium ${
+                      evaluation.winProbabilityChange > 0
+                        ? 'text-green-600'
+                        : evaluation.winProbabilityChange < 0
+                          ? 'text-red-600'
+                          : 'text-muted-foreground'
+                    }`}
+                  >
+                    {formatSignedPercent(evaluation.winProbabilityChange)}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Expected Loss vs Best:</span>
+                <span className="font-medium text-muted-foreground">
+                  {formatPercent(evaluation.expectedLoss)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Centipawn Gap:</span>
+                <span className="font-medium text-muted-foreground">
+                  {(evaluation.centipawnLoss / 100).toFixed(2)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Score Change:</span>
+                <span
+                  className={`font-medium ${
+                    evaluation.score > 0
+                      ? 'text-green-600'
+                      : evaluation.score < 0
+                        ? 'text-red-600'
+                        : 'text-muted-foreground'
                   }`}
                 >
                   {evaluation.score > 0 ? '+' : ''}{(evaluation.score / 100).toFixed(2)}
